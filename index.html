@@ -53,11 +53,15 @@
                         <p class="text-sm text-blue-800"><strong>How it works:</strong> Schedule your token swaps to execute automatically at your chosen time. Perfect for DCA strategies, timed entries/exits, or avoiding emotional trading!</p>
                     </div>
 
-                    <div class="space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">From Token</label>
-                                <select id="tokenIn" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    <div class="max-w-lg mx-auto space-y-4">
+                        <!-- From Token Box -->
+                        <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm font-medium text-gray-600">From</label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="flex-1 text-3xl font-semibold bg-transparent border-none outline-none">
+                                <select id="tokenIn" class="bg-white border-2 border-gray-300 rounded-xl px-4 py-2 font-semibold text-lg hover:border-purple-400 transition cursor-pointer">
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
@@ -72,13 +76,29 @@
                                     <option value="0x3C7f2d20C05C1Da0479D1A2B21AB899e1D7c8e3E">CLANKER</option>
                                     <option value="0x05C2ec8e2f5d1e8E05e49BdD0C8cf05c6e3FAC1B">GAME</option>
                                     <option value="0x8dEa9B7E7F3a5e6b4E9A5F6d7E3a9B4C5d6E7F8A">DRB</option>
-                                    <option value="custom">🔧 Custom Token Address...</option>
+                                    <option value="custom">Custom...</option>
                                 </select>
-                                <input type="text" id="customTokenIn" placeholder="Paste token address (0x...)" class="hidden w-full px-4 py-2 border border-gray-300 rounded-lg mt-2">
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">To Token</label>
-                                <select id="tokenOut" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <input type="text" id="customTokenIn" placeholder="Paste token address (0x...)" class="hidden w-full mt-3 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        </div>
+
+                        <!-- Swap Arrow Button -->
+                        <div class="flex justify-center -my-2 relative z-10">
+                            <button id="swapArrow" class="bg-purple-600 hover:bg-purple-700 text-white rounded-xl p-3 shadow-lg transition transform hover:scale-110">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- To Token Box -->
+                        <div class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-sm font-medium text-gray-600">To (minimum)</label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="number" step="0.001" id="minAmountOut" placeholder="0.0" class="flex-1 text-3xl font-semibold bg-transparent border-none outline-none">
+                                <select id="tokenOut" class="bg-white border-2 border-gray-300 rounded-xl px-4 py-2 font-semibold text-lg hover:border-purple-400 transition cursor-pointer">
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
@@ -93,60 +113,60 @@
                                     <option value="0x3C7f2d20C05C1Da0479D1A2B21AB899e1D7c8e3E">CLANKER</option>
                                     <option value="0x05C2ec8e2f5d1e8E05e49BdD0C8cf05c6e3FAC1B">GAME</option>
                                     <option value="0x8dEa9B7E7F3a5e6b4E9A5F6d7E3a9B4C5d6E7F8A">DRB</option>
-                                    <option value="custom">🔧 Custom Token Address...</option>
+                                    <option value="custom">Custom...</option>
                                 </select>
-                                <input type="text" id="customTokenOut" placeholder="Paste token address (0x...)" class="hidden w-full px-4 py-2 border border-gray-300 rounded-lg mt-2">
                             </div>
+                            <input type="text" id="customTokenOut" placeholder="Paste token address (0x...)" class="hidden w-full mt-3 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <p class="text-xs text-gray-500 mt-2">Slippage protection - minimum tokens you'll receive</p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Amount to Swap</label>
-                                <input type="number" step="0.001" id="amountIn" placeholder="0.1" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Minimum Receive (Slippage)</label>
-                                <input type="number" step="0.001" id="minAmountOut" placeholder="0.095" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
-                                <p class="text-xs text-gray-500 mt-1">Protection against price movement</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <!-- Execution Time Section -->
+                        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 mt-6">
                             <h3 class="font-semibold text-purple-900 mb-3">⏰ Execution Time</h3>
-                            <div class="mb-3">
-                                <label class="flex items-center space-x-2 cursor-pointer">
-                                    <input type="radio" name="timeOption" value="now" id="timeNow" class="w-4 h-4">
+                            <div class="space-y-2 mb-3">
+                                <label class="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg hover:bg-purple-50 transition">
+                                    <input type="radio" name="timeOption" value="now" id="timeNow" class="w-5 h-5 text-purple-600">
                                     <span class="font-semibold">Execute Now (Instant Swap)</span>
                                 </label>
-                                <label class="flex items-center space-x-2 cursor-pointer mt-2">
-                                    <input type="radio" name="timeOption" value="scheduled" id="timeScheduled" checked class="w-4 h-4">
+                                <label class="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg hover:bg-purple-50 transition">
+                                    <input type="radio" name="timeOption" value="scheduled" id="timeScheduled" checked class="w-5 h-5 text-purple-600">
                                     <span class="font-semibold">Schedule for Later</span>
                                 </label>
                             </div>
-                            <div id="scheduledTimeInputs" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div id="scheduledTimeInputs" class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                                    <input type="date" id="executionDate" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                    <input type="date" id="executionDate" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                                    <input type="time" id="executionTime" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                                    <input type="time" id="executionTime" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg">
                                 </div>
                             </div>
-                            <p id="scheduledTimeNote" class="text-sm text-purple-700 mt-2">Your swap will execute automatically at this time (within 1 hour window)</p>
-                            <p id="instantTimeNote" class="text-sm text-purple-700 mt-2 hidden">Swap will execute immediately after confirmation</p>
+                            <p id="scheduledTimeNote" class="text-sm text-purple-700 mt-2">Executes automatically at this time (within 1 hour window)</p>
+                            <p id="instantTimeNote" class="text-sm text-purple-700 mt-2 hidden">Swap executes immediately after confirmation</p>
                         </div>
 
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <h4 class="font-semibold text-gray-800 mb-2">Fee Structure</h4>
-                            <div class="space-y-1 text-sm text-gray-600">
-                                <div class="flex justify-between"><span>Platform Fee:</span><span class="font-semibold">0.3%</span></div>
-                                <div class="flex justify-between"><span>Execution Fee:</span><span class="font-semibold">0.2%</span></div>
-                                <div class="flex justify-between border-t border-gray-300 pt-1 mt-1"><span class="font-semibold">Total:</span><span class="font-semibold text-purple-600">0.5%</span></div>
+                        <!-- Fee Info -->
+                        <div class="bg-gray-100 rounded-xl p-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Platform Fee</span>
+                                <span class="font-semibold">0.3%</span>
+                            </div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-600">Execution Fee</span>
+                                <span class="font-semibold">0.2%</span>
+                            </div>
+                            <div class="flex justify-between text-sm pt-2 border-t border-gray-300">
+                                <span class="font-semibold text-gray-800">Total Fee</span>
+                                <span class="font-semibold text-purple-600">0.5%</span>
                             </div>
                         </div>
 
-                        <button id="scheduleSwapBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 rounded-lg transition text-lg">Schedule Swap</button>
+                        <!-- Schedule Button -->
+                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg">
+                            Schedule Swap
+                        </button>
                     </div>
                 </div>
 
@@ -170,6 +190,14 @@
         document.getElementById('scheduleTab').addEventListener('click',()=>switchTab('schedule'));
         document.getElementById('swapsTab').addEventListener('click',()=>switchTab('swaps'));
         document.getElementById('scheduleSwapBtn').addEventListener('click',scheduleSwap);
+        
+        document.getElementById('swapArrow').addEventListener('click',function(){
+            const tokenInSelect = document.getElementById('tokenIn');
+            const tokenOutSelect = document.getElementById('tokenOut');
+            const tempValue = tokenInSelect.value;
+            tokenInSelect.value = tokenOutSelect.value;
+            tokenOutSelect.value = tempValue;
+        });
         
         document.getElementById('tokenIn').addEventListener('change',function(){
             if(this.value==='custom'){

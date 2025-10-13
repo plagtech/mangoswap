@@ -187,52 +187,25 @@
                             </div>
                         </div>
 
-                        <!-- Execution Time Section -->
-                        <div class="bg-purple-50 border-2 border-purple-200 rounded-2xl p-4 mt-6">
-                            <h3 class="font-semibold text-purple-900 mb-3">⏰ Execution Time</h3>
-                            <div class="space-y-2 mb-3">
-                                <label class="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg hover:bg-purple-50 transition">
-                                    <input type="radio" name="timeOption" value="now" id="timeNow" class="w-5 h-5 text-purple-600">
-                                    <span class="font-semibold">Execute Now (Instant Swap)</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer bg-white p-3 rounded-lg hover:bg-purple-50 transition">
-                                    <input type="radio" name="timeOption" value="scheduled" id="timeScheduled" checked class="w-5 h-5 text-purple-600">
-                                    <span class="font-semibold">Schedule for Later</span>
-                                </label>
-                            </div>
-                            <div id="scheduledTimeInputs" class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                                    <input type="date" id="executionDate" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                                    <input type="time" id="executionTime" class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg">
-                                </div>
-                            </div>
-                            <p id="scheduledTimeNote" class="text-sm text-purple-700 mt-2">Executes automatically at this time (within 1 hour window)</p>
-                            <p id="instantTimeNote" class="text-sm text-purple-700 mt-2 hidden">Swap executes immediately after confirmation</p>
-                        </div>
-
                         <!-- Fee Info -->
-                        <div class="bg-gray-100 rounded-xl p-4">
+                        <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 border-2 border-green-300">
                             <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">Platform Fee</span>
-                                <span class="font-semibold">0.3%</span>
+                                <span class="text-green-800 font-semibold">Platform Fee</span>
+                                <span class="font-bold text-green-900">0.3%</span>
                             </div>
                             <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-600">Execution Fee</span>
-                                <span class="font-semibold">0.2%</span>
+                                <span class="text-green-800 font-semibold">Execution Fee</span>
+                                <span class="font-bold text-green-900">0.2%</span>
                             </div>
-                            <div class="flex justify-between text-sm pt-2 border-t border-gray-300">
-                                <span class="font-semibold text-gray-800">Total Fee</span>
-                                <span class="font-semibold text-purple-600">0.5%</span>
+                            <div class="flex justify-between text-sm pt-2 border-t-2 border-green-300">
+                                <span class="font-bold text-green-900">Total Fee</span>
+                                <span class="font-bold text-orange-600 text-lg">0.5%</span>
                             </div>
                         </div>
 
                         <!-- Schedule Button -->
-                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold py-4 rounded-xl transition text-lg shadow-lg">
-                            Schedule Swap
+                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">
+                            🥭 Schedule Swap 🌴
                         </button>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,6 @@
                 </div>
             </div>
         </div>
-
         <div id="mainContent" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-xl shadow-lg p-6 border-2 border-orange-200">
@@ -41,27 +40,23 @@
                     <button id="withdrawBtn" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg text-sm transition font-bold shadow-md" style="display:none;">💰 Withdraw</button>
                 </div>
             </div>
-
             <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-orange-300">
                 <div class="flex border-b-4 border-orange-200">
                     <button id="scheduleTab" class="flex-1 px-6 py-4 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-lg">Schedule Swap</button>
                     <button id="swapsTab" class="flex-1 px-6 py-4 font-bold text-gray-600 hover:bg-orange-50 text-lg transition">My Swaps</button>
                 </div>
-
                 <div id="scheduleContent" class="p-6 bg-gradient-to-br from-orange-50 to-yellow-50">
                     <div class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-xl p-4 mb-6">
                         <p class="text-sm text-orange-900 font-medium">🌴 <strong>How it works:</strong> Schedule your token swaps to execute automatically at your chosen time. Perfect for DCA strategies, timed entries/exits, or avoiding emotional trading!</p>
                     </div>
-
                     <div class="max-w-lg mx-auto space-y-4">
-                        <!-- From Token Box -->
                         <div class="bg-white border-3 border-orange-300 rounded-2xl p-4 shadow-lg">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-orange-700">From</label>
                             </div>
                             <div class="flex items-center gap-3">
                                 <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="flex-1 text-3xl font-bold bg-transparent border-none outline-none text-gray-800">
-                                <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-3 border-orange-300 rounded-xl px-4 py-2 font-bold text-lg hover:border-orange-400 transition cursor-pointer">
+                                <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-3 border-orange-300 rounded-xl px-4 py-2 font-bold text-lg hover:border-orange-400 transition cursor-pointer flex-shrink-0">
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
@@ -81,8 +76,6 @@
                             </div>
                             <input type="text" id="customTokenIn" placeholder="Paste token address (0x...)" class="hidden w-full mt-3 px-3 py-2 border-2 border-orange-200 rounded-lg text-sm">
                         </div>
-
-                        <!-- Swap Arrow Button -->
                         <div class="flex justify-center -my-2 relative z-10">
                             <button id="swapArrow" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-xl p-3 shadow-xl transition transform hover:scale-110 hover:rotate-180 duration-300 border-3 border-white">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,19 +83,15 @@
                                 </svg>
                             </button>
                         </div>
-
-                        <!-- To Token Box -->
                         <div class="bg-white border-3 border-green-300 rounded-2xl p-4 shadow-lg">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-green-700">To (estimated)</label>
                                 <div id="priceLoading" class="hidden text-xs text-orange-600 font-semibold">Fetching price...</div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <div class="flex-1">
-                                    <div id="estimatedAmount" class="text-3xl font-bold text-gray-800">0.0</div>
-                                    <input type="number" step="0.001" id="minAmountOut" placeholder="0.0" class="hidden w-full text-lg bg-transparent border-none outline-none mt-1">
-                                </div>
-                                <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-3 border-green-300 rounded-xl px-4 py-2 font-bold text-lg hover:border-green-400 transition cursor-pointer">
+                                <div class="flex-1 text-3xl font-bold text-gray-800" id="estimatedAmount">0.0</div>
+                                <input type="number" step="0.001" id="minAmountOut" placeholder="0.0" class="hidden">
+                                <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-3 border-green-300 rounded-xl px-4 py-2 font-bold text-lg hover:border-green-400 transition cursor-pointer flex-shrink-0">
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
@@ -132,8 +121,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Execution Time Section -->
                         <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-3 border-yellow-300 rounded-2xl p-4 mt-6 shadow-lg">
                             <h3 class="font-bold text-orange-800 mb-3 text-lg">⏰ Execution Time</h3>
                             <div class="space-y-2 mb-3">
@@ -159,8 +146,6 @@
                             <p id="scheduledTimeNote" class="text-sm text-orange-800 mt-2 font-medium">Executes automatically at this time (within 1 hour window)</p>
                             <p id="instantTimeNote" class="text-sm text-orange-800 mt-2 font-medium hidden">Swap executes immediately after confirmation</p>
                         </div>
-
-                        <!-- Fee Info -->
                         <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 border-2 border-green-300">
                             <div class="flex justify-between text-sm mb-1">
                                 <span class="text-green-800 font-semibold">Platform Fee</span>
@@ -175,50 +160,17 @@
                                 <span class="font-bold text-orange-600 text-lg">0.5%</span>
                             </div>
                         </div>
-
-                        <!-- Schedule Button -->
-                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">
-                            🥭 Schedule Swap 🌴
-                        </button>
-                    </div>
-                </div>ippage):</span>
-                                    <span id="minReceived" class="font-medium">-</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Fee Info -->
-                        <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 border-2 border-green-300">
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-green-800 font-semibold">Platform Fee</span>
-                                <span class="font-bold text-green-900">0.3%</span>
-                            </div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-green-800 font-semibold">Execution Fee</span>
-                                <span class="font-bold text-green-900">0.2%</span>
-                            </div>
-                            <div class="flex justify-between text-sm pt-2 border-t-2 border-green-300">
-                                <span class="font-bold text-green-900">Total Fee</span>
-                                <span class="font-bold text-orange-600 text-lg">0.5%</span>
-                            </div>
-                        </div>
-
-                        <!-- Schedule Button -->
-                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">
-                            🥭 Schedule Swap 🌴
-                        </button>
+                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">🥭 Schedule Swap 🌴</button>
                     </div>
                 </div>
-
                 <div id="swapsContent" class="p-6 hidden">
                     <div id="swapsList"></div>
                 </div>
             </div>
         </div>
     </div>
-
     <script>
-        const CONTRACT_ADDRESS = '0xde6d1499acfb534b36b31e2f1efff90d5af819d7';
+        const CONTRACT_ADDRESS='0xde6d1499acfb534b36b31e2f1efff90d5af819d7';const BASE_CHAIN_ID='0x2105';const ABI=["function scheduleSwap(address,address,uint256,uint256,uint256) external payable returns(uint256)","function cancelSwap(uint256) external","function getSwap(uint256) external view returns(tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256))","function getUserSwaps(address) external view returns(uint256[])","function getTotalSwaps() external view returns(uint256)","function withdrawFees() external","function owner() external view returns(address)"];const TOKENS={'0x0000000000000000000000000000000000000000':'ETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x5f62728a88aec4878e68dcf5c48dff3a5d8f8b8e':'AUKI','0x3c7f2d20c05c1da0479d1a2b21ab899e1d7c8e3e':'CLANKER','0x05c2ec8e2f5d1e8e05e49bdd0c8cf05c6e3fac1b':'GAME','0x8dea9b7e7f3a5e6b4e9a5f6d7e3a9b4c5d6e7f8a':'DRB'};const WETH='0x4200000000000000000000000000000000000006';let provider,signer,contract,account,isOwner=false,quoteTimeout;document.getElementById('connectBtn').addEventListener('click',connectWallet);document.getElementById('scheduleTab').addEventListener('click',()=>switchTab('schedule'));document.getElementById('swapsTab').addEventListener('click',()=>switchTab('swaps'));document.getElementById('scheduleSwapBtn').addEventListener('click',scheduleSwap);document.getElementById('amountIn').addEventListener('input',debounceQuote);document.getElementById('tokenIn').addEventListener('change',getQuote);document.getElementById('tokenOut').addEventListener('change',getQuote);document.getElementById('swapArrow').addEventListener('click',function(){const tokenInSelect=document.getElementById('tokenIn');const tokenOutSelect=document.getElementById('tokenOut');const tempValue=tokenInSelect.value;tokenInSelect.value=tokenOutSelect.value;tokenOutSelect.value=tempValue;getQuote()});document.getElementById('tokenIn').addEventListener('change',function(){if(this.value==='custom'){document.getElementById('customTokenIn').classList.remove('hidden')}else{document.getElementById('customTokenIn').classList.add('hidden')}});document.getElementById('tokenOut').addEventListener('change',function(){if(this.value==='custom'){document.getElementById('customTokenOut').classList.remove('hidden')}else{document.getElementById('customTokenOut').classList.add('hidden')}});document.getElementById('timeNow').addEventListener('change',function(){if(this.checked){document.getElementById('scheduledTimeInputs').classList.add('hidden');document.getElementById('scheduledTimeNote').classList.add('hidden');document.getElementById('instantTimeNote').classList.remove('hidden')}});document.getElementById('timeScheduled').addEventListener('change',function(){if(this.checked){document.getElementById('scheduledTimeInputs').classList.remove('hidden');document.getElementById('scheduledTimeNote').classList.remove('hidden');document.getElementById('instantTimeNote').classList.add('hidden')}});async function connectWallet(){if(!window.ethereum){alert('Install MetaMask!');return}try{const accounts=await window.ethereum.request({method:'eth_requestAccounts'});const chainId=await window.ethereum.request({method:'eth_chainId'});if(chainId!==BASE_CHAIN_ID){try{await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:BASE_CHAIN_ID}]})}catch(e){if(e.code===4902){await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:BASE_CHAIN_ID,chainName:'Base',nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},rpcUrls:['https://mainnet.base.org'],blockExplorerUrls:['https://basescan.org']}]})}}}account=accounts[0];provider=new ethers.providers.Web3Provider(window.ethereum);signer=provider.getSigner();contract=new ethers.Contract(CONTRACT_ADDRESS,ABI,signer);document.getElementById('connectBtn').classList.add('hidden');document.getElementById('accountInfo').classList.remove('hidden');document.getElementById('accountAddress').textContent=account.slice(0,6)+'...'+account.slice(-4);document.getElementById('mainContent').classList.remove('hidden');const owner=await contract.owner();isOwner=owner.toLowerCase()===account.toLowerCase();if(isOwner){document.getElementById('ownerStats').classList.remove('hidden');document.getElementById('withdrawBtn').style.display='block'}loadData()}catch(e){alert('Failed: '+e.message)}}async function loadData(){try{const total=await contract.getTotalSwaps();document.getElementById('totalSwaps').textContent=total.toString();const ids=await contract.getUserSwaps(account);const swaps=await Promise.all(ids.map(async id=>{const s=await contract.getSwap(id);return{id:s[0].toString(),user:s[1],tokenIn:s[2],tokenOut:s[3],amountIn:ethers.utils.formatEther(s[4]),minAmountOut:ethers.utils.formatEther(s[5]),executionTime:new Date(s[6].toNumber()*1000),status:['Scheduled','Executed','Cancelled','Failed'][s[7]],executedAt:s[8].toNumber(),amountOut:ethers.utils.formatEther(s[9])}}));const scheduled=swaps.filter(s=>s.status==='Scheduled').length;const executed=swaps.filter(s=>s.status==='Executed').length;document.getElementById('scheduledCount').textContent=scheduled;document.getElementById('executedCount').textContent=executed;displaySwaps(swaps)}catch(e){console.error(e)}}function displaySwaps(swaps){const list=document.getElementById('swapsList');if(swaps.length===0){list.innerHTML='<div class="text-center py-12 text-gray-500"><p>No swaps scheduled yet!</p></div>';return}list.innerHTML=swaps.map(s=>{const tokenInName=TOKENS[s.tokenIn.toLowerCase()]||s.tokenIn.slice(0,6)+'...';const tokenOutName=TOKENS[s.tokenOut.toLowerCase()]||s.tokenOut.slice(0,6)+'...';return`<div class="border-2 border-orange-200 rounded-xl p-6 mb-4 bg-white shadow-lg"><div class="flex justify-between mb-4"><span class="px-3 py-1 rounded-full text-sm font-semibold ${s.status==='Scheduled'?'bg-yellow-100 text-yellow-800':s.status==='Executed'?'bg-green-100 text-green-800':'bg-gray-100 text-gray-800'}">${s.status}</span><div class="text-right"><div class="font-bold text-lg">${s.amountIn} ${tokenInName} → ${tokenOutName}</div><div class="text-sm text-gray-600">Min: ${s.minAmountOut} ${tokenOutName}</div></div></div><div class="grid grid-cols-2 gap-4 text-sm mb-4"><div><span class="text-gray-600">Executes:</span><div class="font-semibold">${s.executionTime.toLocaleString()}</div></div>${s.status==='Executed'?`<div><span class="text-gray-600">Received:</span><div class="font-semibold text-green-600">${s.amountOut} ${tokenOutName}</div></div>`:''}</div>${s.status==='Scheduled'?`<button onclick="cancelSwap(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition">Cancel Swap</button>`:''}</div>`}).join('')}async function scheduleSwap(){let tokenIn=document.getElementById('tokenIn').value;let tokenOut=document.getElementById('tokenOut').value;if(tokenIn==='custom'){tokenIn=document.getElementById('customTokenIn').value.trim();if(!tokenIn||!tokenIn.startsWith('0x')||tokenIn.length!==42){alert('Invalid token address for From Token');return}}if(tokenOut==='custom'){tokenOut=document.getElementById('customTokenOut').value.trim();if(!tokenOut||!tokenOut.startsWith('0x')||tokenOut.length!==42){alert('Invalid token address for To Token');return}}const amount=document.getElementById('amountIn').value;const minOut=document.getElementById('minAmountOut').value;if(!amount||!minOut){alert('Fill all fields');return}if(tokenIn===tokenOut){alert('Select different tokens');return}const isInstant=document.getElementById('timeNow').checked;let execTime;if(isInstant){execTime=Math.floor(Date.now()/1000)+60}else{const date=document.getElementById('executionDate').value;const time=document.getElementById('executionTime').value;if(!date||!time){alert('Please set execution date and time');return}execTime=Math.floor(new Date(date+' '+time).getTime()/1000)}try{const amountWei=ethers.utils.parseEther(amount);const minOutWei=ethers.utils.parseEther(minOut);const tx=tokenIn==='0x0000000000000000000000000000000000000000'?await contract.scheduleSwap(tokenIn,tokenOut,amountWei,minOutWei,execTime,{value:amountWei}):await contract.scheduleSwap(tokenIn,tokenOut,amountWei,minOutWei,execTime);await tx.wait();alert(isInstant?'Swap scheduled for immediate execution!':'Swap scheduled!');document.getElementById('amountIn').value='';document.getElementById('minAmountOut').value='';document.getElementById('executionDate').value='';document.getElementById('executionTime').value='';loadData()}catch(e){alert('Failed: '+e.message)}}async function cancelSwap(id){try{const tx=await contract.cancelSwap(id);await tx.wait();alert('Cancelled!');loadData()}catch(e){alert('Failed: '+e.message)}}function switchTab(tab){if(tab==='schedule'){document.getElementById('scheduleTab').classList.add('bg-gradient-to-r','from-orange-500','to-yellow-500','text-white');document.getElementById('scheduleTab').classList.remove('text-gray-600');document.getElementById('swapsTab').classList.remove('bg-gradient-to-r','from-orange-500','to-yellow-500','text-white');document.getElementById('swapsTab').classList.add('text-gray-600');document.getElementById('scheduleContent').classList.remove('hidden');document.getElementById('swapsContent').classList.add('hidden')}else{document.getElementById('swapsTab').classList.add('bg-gradient-to-r','from-orange-500','to-yellow-500','text-white');document.getElementById('swapsTab').classList.remove('text-gray-600');document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r','from-orange-500','to-yellow-500','text-white');document.getElementById('scheduleTab').classList.add('text-gray-600');document.getElementById('swapsContent').classList.remove('hidden');document.getElementById('scheduleContent').classList.add('hidden')}}document.getElementById('withdrawBtn')?.addEventListener('click',async()=>{try{const tx=await contract.withdrawFees();await tx.wait();alert('Fees withdrawn!')}catch(e){alert('Failed: '+e.message)}});function debounceQuote(){clearTimeout(quoteTimeout);quoteTimeout=setTimeout(getQuote,500)}async function getQuote(){const amountIn=document.getElementById('amountIn').value;let tokenIn=document.getElementById('tokenIn').value;let tokenOut=document.getElementById('tokenOut').value;if(!amountIn||amountIn<=0
         const BASE_CHAIN_ID = '0x2105';
         const ABI = ["function scheduleSwap(address,address,uint256,uint256,uint256) external payable returns(uint256)","function cancelSwap(uint256) external","function getSwap(uint256) external view returns(tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256))","function getUserSwaps(address) external view returns(uint256[])","function getTotalSwaps() external view returns(uint256)","function withdrawFees() external","function owner() external view returns(address)"];
 

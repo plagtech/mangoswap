@@ -410,6 +410,7 @@
         }
 
         async function connectWallet(walletType) {
+            console.log('Attempting to connect:', walletType);
             selectedWallet = walletType;
             hideWalletModal();
 
@@ -423,33 +424,44 @@
                     return;
                 }
             } else {
-                if (window.ethereum && !window.ethereum.isPhantom) {
-                    ethereum = window.ethereum;
-                } else if (window.ethereum?.providers) {
-                    ethereum = window.ethereum.providers.find(p => p.isMetaMask);
-                } else {
-                    alert('MetaMask not installed! Visit metamask.io to install.');
+                // MetaMask - simplified detection
+                console.log('window.ethereum exists:', !!window.ethereum);
+                
+                if (!window.ethereum) {
+                    alert('No wallet detected! Please install MetaMask from metamask.io');
                     return;
                 }
+                
+                // Use window.ethereum directly
+                ethereum = window.ethereum;
+                console.log('Using ethereum provider:', ethereum);
             }
 
             if (!ethereum) {
-                alert(`${walletType === 'phantom' ? 'Phantom' : 'MetaMask'} not found!`);
+                alert('Wallet provider not found!');
                 return;
             }
             
             try {
+                console.log('Requesting accounts...');
                 const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                console.log('Accounts received:', accounts);
+                
+                console.log('Checking chain ID...');
                 const chainId = await ethereum.request({ method: 'eth_chainId' });
+                console.log('Current chain ID:', chainId, 'Expected:', BASE_CHAIN_ID);
                 
                 if (chainId !== BASE_CHAIN_ID) {
+                    console.log('Wrong network, switching to Base...');
                     try {
                         await ethereum.request({
                             method: 'wallet_switchEthereumChain',
                             params: [{ chainId: BASE_CHAIN_ID }],
                         });
-                    } catch (e) {
-                        if (e.code === 4902) {
+                    } catch (switchError) {
+                        console.log('Switch error:', switchError);
+                        if (switchError.code === 4902) {
+                            console.log('Network not added, adding Base network...');
                             await ethereum.request({
                                 method: 'wallet_addEthereumChain',
                                 params: [{
@@ -460,20 +472,30 @@
                                     blockExplorerUrls: ['https://basescan.org']
                                 }]
                             });
+                        } else {
+                            throw switchError;
                         }
                     }
                 }
                 
                 account = accounts[0];
+                console.log('Connected account:', account);
+                
                 provider = new ethers.providers.Web3Provider(ethereum);
                 signer = provider.getSigner();
                 contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+                isConnected = true;
+                
+                console.log('Provider initialized');
                 
                 document.getElementById('connectBtn').classList.add('hidden');
                 document.getElementById('accountInfo').classList.remove('hidden');
                 document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
-                document.getElementById('mainContent').classList.remove('hidden');
+                document.getElementById('balanceSection').style.display = 'block';
+                document.getElementById('scheduleSwapBtn').disabled = false;
+                document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
                 
+                console.log('Checking if owner...');
                 const owner = await contract.owner();
                 isOwner = owner.toLowerCase() === account.toLowerCase();
                 if (isOwner) {
@@ -481,45 +503,13 @@
                     document.getElementById('withdrawBtn').style.display = 'block';
                 }
                 
+                console.log('Loading data...');
                 loadData();
                 updateBalance();
+                console.log('Connection complete!');
             } catch (e) {
-                alert('Failed: ' + e.message);
-            }
-        }
-
-        async function updateBalance() {
-            if (!provider || !account) return;
-            
-            const tokenIn = document.getElementById('tokenIn').value;
-            if (tokenIn === 'custom') return;
-            
-            try {
-                let balance;
-                if (tokenIn === '0x0000000000000000000000000000000000000000') {
-                    // ETH balance
-                    balance = await provider.getBalance(account);
-                    userBalanceFrom = parseFloat(ethers.utils.formatEther(balance));
-                } else {
-                    // ERC20 balance
-                    const tokenContract = new ethers.Contract(tokenIn, ERC20_ABI, provider);
-                    balance = await tokenContract.balanceOf(account);
-                    const decimals = await tokenContract.decimals();
-                    userBalanceFrom = parseFloat(ethers.utils.formatUnits(balance, decimals));
-                }
-                
-                const tokenName = TOKENS[tokenIn.toLowerCase()] || 'Token';
-                document.getElementById('balanceFrom').textContent = `${userBalanceFrom.toFixed(4)} ${tokenName}`;
-                
-                // Show approval indicator if not ETH
-                if (tokenIn !== '0x0000000000000000000000000000000000000000') {
-                    document.getElementById('approvalIndicator').classList.remove('hidden');
-                } else {
-                    document.getElementById('approvalIndicator').classList.add('hidden');
-                }
-            } catch (e) {
-                console.error('Balance fetch error:', e);
-                document.getElementById('balanceFrom').textContent = '-';
+                console.error('Connection error details:', e);
+                alert('Failed to connect: ' + e.message + '\n\nCheck browser console (F12) for details.');
             }
         }
 
@@ -656,6 +646,7 @@
                 document.getElementById('executionTime').value = '';
                 loadData();
             } catch (e) {
+                console.error('Schedule swap error:', e);
                 alert('Failed: ' + e.message);
             }
         }
@@ -667,6 +658,7 @@
                 alert('Cancelled!');
                 loadData();
             } catch (e) {
+                console.error('Cancel swap error:', e);
                 alert('Failed: ' + e.message);
             }
         }
@@ -695,6 +687,7 @@
                 await tx.wait();
                 alert('Fees withdrawn!');
             } catch (e) {
+                console.error('Withdraw error:', e);
                 alert('Failed: ' + e.message);
             }
         });
@@ -702,6 +695,38 @@
         function debounceQuote() {
             clearTimeout(quoteTimeout);
             quoteTimeout = setTimeout(getQuote, 500);
+        }
+
+        async function updateBalance() {
+            if (!provider || !account) return;
+            
+            const tokenIn = document.getElementById('tokenIn').value;
+            if (tokenIn === 'custom') return;
+            
+            try {
+                let balance;
+                if (tokenIn === '0x0000000000000000000000000000000000000000') {
+                    balance = await provider.getBalance(account);
+                    userBalanceFrom = parseFloat(ethers.utils.formatEther(balance));
+                } else {
+                    const tokenContract = new ethers.Contract(tokenIn, ERC20_ABI, provider);
+                    balance = await tokenContract.balanceOf(account);
+                    const decimals = await tokenContract.decimals();
+                    userBalanceFrom = parseFloat(ethers.utils.formatUnits(balance, decimals));
+                }
+                
+                const tokenName = TOKENS[tokenIn.toLowerCase()] || 'Token';
+                document.getElementById('balanceFrom').textContent = `${userBalanceFrom.toFixed(4)} ${tokenName}`;
+                
+                if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                    document.getElementById('approvalIndicator').classList.remove('hidden');
+                } else {
+                    document.getElementById('approvalIndicator').classList.add('hidden');
+                }
+            } catch (e) {
+                console.error('Balance fetch error:', e);
+                document.getElementById('balanceFrom').textContent = '-';
+            }
         }
 
         async function getQuote() {
@@ -712,6 +737,8 @@
             if (!amountIn || amountIn <= 0 || tokenIn === tokenOut) {
                 document.getElementById('estimatedAmount').textContent = '0.0';
                 document.getElementById('priceInfo').classList.add('hidden');
+                document.getElementById('usdValueIn').textContent = '$0.00';
+                document.getElementById('usdValueOut').textContent = '$0.00';
                 return;
             }
 
@@ -749,11 +776,9 @@
                     const slippageMultiplier = (100 - slippageTolerance) / 100;
                     const minOut = estimated * slippageMultiplier;
                     
-                    // Store prices for USD display
                     currentPriceUSD = price;
                     const outputPriceUSD = price2;
                     
-                    // Update USD values
                     const usdIn = parseFloat(amountIn) * price;
                     const usdOut = estimated * outputPriceUSD;
                     document.getElementById('usdValueIn').textContent = `${usdIn.toFixed(2)}`;
@@ -773,11 +798,6 @@
                     document.getElementById('estimatedAmount').textContent = '0.0';
                     document.getElementById('usdValueIn').textContent = '$0.00';
                     document.getElementById('usdValueOut').textContent = '$0.00';
-                }getElementById('exchangeRate').textContent = `1 ${tokenInName} = ${rate} ${tokenOutName}`;
-                    document.getElementById('minReceived').textContent = `${minOut.toFixed(6)} ${tokenOutName}`;
-                    document.getElementById('priceInfo').classList.remove('hidden');
-                } else {
-                    document.getElementById('estimatedAmount').textContent = '0.0';
                 }
 
                 document.getElementById('priceLoading').classList.add('hidden');

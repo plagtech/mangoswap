@@ -102,13 +102,22 @@
                         <div class="bg-white border-3 border-orange-300 rounded-2xl p-4 shadow-lg transition-colors duration-300">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-orange-700">From</label>
+                                <div class="text-right">
+                                    <div class="text-xs text-gray-600">Balance: <span id="balanceFrom" class="font-semibold">-</span></div>
+                                    <button id="maxBtn" class="text-xs bg-orange-200 hover:bg-orange-300 text-orange-800 font-bold px-2 py-1 rounded transition">MAX</button>
+                                </div>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                                <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="flex-1 text-3xl font-bold bg-transparent border-none outline-none text-gray-800 w-full">
+                                <div class="flex-1">
+                                    <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="w-full text-3xl font-bold bg-transparent border-none outline-none text-gray-800">
+                                    <div id="usdValueIn" class="text-sm text-gray-500 mt-1">$0.00</div>
+                                </div>
                                 <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-3 border-orange-300 rounded-xl px-4 py-3 font-bold text-lg hover:border-orange-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[140px]">
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                                    <option value="0x4200000000000000000000000000000000000006">WETH</option>
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                                    <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
                                     <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
                                     <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
                                     <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
@@ -116,10 +125,7 @@
                                     <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
                                     <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                                     <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
-                                    <option value="0x5F62728a88AEC4878E68DCf5c48dFf3a5d8f8b8E">AUKI</option>
-                                    <option value="0x3C7f2d20C05C1Da0479D1A2B21AB899e1D7c8e3E">CLANKER</option>
-                                    <option value="0x05C2ec8e2f5d1e8E05e49BdD0C8cf05c6e3FAC1B">GAME</option>
-                                    <option value="0x8dEa9B7E7F3a5e6b4E9A5F6d7E3a9B4C5d6E7F8A">DRB</option>
+                                    <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
@@ -140,12 +146,17 @@
                                 <div id="priceLoading" class="hidden text-xs text-orange-600 font-semibold">Fetching price...</div>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                                <div class="flex-1 text-3xl font-bold text-gray-800 w-full" id="estimatedAmount">0.0</div>
+                                <div class="flex-1">
+                                    <div class="text-3xl font-bold text-gray-800" id="estimatedAmount">0.0</div>
+                                    <div id="usdValueOut" class="text-sm text-gray-500 mt-1">$0.00</div>
+                                </div>
                                 <input type="number" step="0.001" id="minAmountOut" placeholder="0.0" class="hidden">
                                 <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-3 border-green-300 rounded-xl px-4 py-3 font-bold text-lg hover:border-green-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[140px]">
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                                    <option value="0x4200000000000000000000000000000000000006">WETH</option>
                                     <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                                    <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
                                     <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
                                     <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
                                     <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
@@ -153,10 +164,7 @@
                                     <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
                                     <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                                     <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
-                                    <option value="0x5F62728a88AEC4878E68DCf5c48dFf3a5d8f8b8E">AUKI</option>
-                                    <option value="0x3C7f2d20C05C1Da0479D1A2B21AB899e1D7c8e3E">CLANKER</option>
-                                    <option value="0x05C2ec8e2f5d1e8E05e49BdD0C8cf05c6e3FAC1B">GAME</option>
-                                    <option value="0x8dEa9B7E7F3a5e6b4E9A5F6d7E3a9B4C5d6E7F8A">DRB</option>
+                                    <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
@@ -217,6 +225,24 @@
                         <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">
                             🥭 Schedule Swap 🌴
                         </button>
+                        
+                        <!-- Approval Flow Indicator -->
+                        <div id="approvalIndicator" class="hidden mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-xl p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div id="step1" class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">1</div>
+                                        <span class="font-semibold text-blue-900">Approve Token</span>
+                                    </div>
+                                    <div class="text-blue-400">→</div>
+                                    <div id="step2" class="flex items-center gap-2 opacity-50">
+                                        <div class="w-8 h-8 rounded-full bg-gray-300 text-white flex items-center justify-center font-bold">2</div>
+                                        <span class="font-semibold text-gray-600">Schedule Swap</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-sm text-blue-800">💡 First time swapping this token? You'll need to approve it first (one-time transaction).</p>
+                        </div>
                     </div>
                 </div>
 
@@ -232,7 +258,7 @@
         const BASE_CHAIN_ID = '0x2105';
         const ABI = ["function scheduleSwap(address,address,uint256,uint256,uint256) external payable returns(uint256)","function cancelSwap(uint256) external","function getSwap(uint256) external view returns(tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256))","function getUserSwaps(address) external view returns(uint256[])","function getTotalSwaps() external view returns(uint256)","function withdrawFees() external","function owner() external view returns(address)"];
 
-        const TOKENS = {'0x0000000000000000000000000000000000000000':'ETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x5f62728a88aec4878e68dcf5c48dff3a5d8f8b8e':'AUKI','0x3c7f2d20c05c1da0479d1a2b21ab899e1d7c8e3e':'CLANKER','0x05c2ec8e2f5d1e8e05e49bdd0c8cf05c6e3fac1b':'GAME','0x8dea9b7e7f3a5e6b4e9a5f6d7e3a9b4c5d6e7f8a':'DRB'};
+        const TOKENS = {'0x0000000000000000000000000000000000000000':'ETH','0x4200000000000000000000000000000000000006':'WETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf':'cbBTC','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x58d97b57bb95320f9a05dc918aef65434969c2b2':'MORPHO'};
 
         const WETH = '0x4200000000000000000000000000000000000006';
         let provider, signer, contract, account, isOwner = false;
@@ -241,6 +267,16 @@
         
         // Settings state
         let slippageTolerance = 5;
+        let userBalanceFrom = 0;
+        let currentPriceUSD = 0;
+
+        // ERC20 ABI for balance and approval
+        const ERC20_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function decimals() view returns (uint8)",
+            "function allowance(address,address) view returns (uint256)",
+            "function approve(address,uint256) returns (bool)"
+        ];
 
         // Load saved settings
         function loadSettings() {
@@ -305,8 +341,16 @@
         document.getElementById('scheduleSwapBtn').addEventListener('click', scheduleSwap);
         
         document.getElementById('amountIn').addEventListener('input', debounceQuote);
-        document.getElementById('tokenIn').addEventListener('change', getQuote);
+        document.getElementById('tokenIn').addEventListener('change', () => {
+            getQuote();
+            updateBalance();
+        });
         document.getElementById('tokenOut').addEventListener('change', getQuote);
+        
+        document.getElementById('maxBtn').addEventListener('click', () => {
+            document.getElementById('amountIn').value = userBalanceFrom;
+            getQuote();
+        });
         
         document.getElementById('swapArrow').addEventListener('click', function() {
             const tokenInSelect = document.getElementById('tokenIn');
@@ -430,8 +474,44 @@
                 }
                 
                 loadData();
+                updateBalance();
             } catch (e) {
                 alert('Failed: ' + e.message);
+            }
+        }
+
+        async function updateBalance() {
+            if (!provider || !account) return;
+            
+            const tokenIn = document.getElementById('tokenIn').value;
+            if (tokenIn === 'custom') return;
+            
+            try {
+                let balance;
+                if (tokenIn === '0x0000000000000000000000000000000000000000') {
+                    // ETH balance
+                    balance = await provider.getBalance(account);
+                    userBalanceFrom = parseFloat(ethers.utils.formatEther(balance));
+                } else {
+                    // ERC20 balance
+                    const tokenContract = new ethers.Contract(tokenIn, ERC20_ABI, provider);
+                    balance = await tokenContract.balanceOf(account);
+                    const decimals = await tokenContract.decimals();
+                    userBalanceFrom = parseFloat(ethers.utils.formatUnits(balance, decimals));
+                }
+                
+                const tokenName = TOKENS[tokenIn.toLowerCase()] || 'Token';
+                document.getElementById('balanceFrom').textContent = `${userBalanceFrom.toFixed(4)} ${tokenName}`;
+                
+                // Show approval indicator if not ETH
+                if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                    document.getElementById('approvalIndicator').classList.remove('hidden');
+                } else {
+                    document.getElementById('approvalIndicator').classList.add('hidden');
+                }
+            } catch (e) {
+                console.error('Balance fetch error:', e);
+                document.getElementById('balanceFrom').textContent = '-';
             }
         }
 
@@ -522,6 +602,12 @@
                 alert('Fill all fields');
                 return;
             }
+            
+            if (parseFloat(amount) > userBalanceFrom && tokenIn !== 'custom') {
+                alert(`Insufficient balance. You have ${userBalanceFrom.toFixed(4)} tokens.`);
+                return;
+            }
+            
             if (tokenIn === tokenOut) {
                 alert('Select different tokens');
                 return;
@@ -649,6 +735,16 @@
                     const slippageMultiplier = (100 - slippageTolerance) / 100;
                     const minOut = estimated * slippageMultiplier;
                     
+                    // Store prices for USD display
+                    currentPriceUSD = price;
+                    const outputPriceUSD = price2;
+                    
+                    // Update USD values
+                    const usdIn = parseFloat(amountIn) * price;
+                    const usdOut = estimated * outputPriceUSD;
+                    document.getElementById('usdValueIn').textContent = `${usdIn.toFixed(2)}`;
+                    document.getElementById('usdValueOut').textContent = `${usdOut.toFixed(2)}`;
+                    
                     document.getElementById('estimatedAmount').textContent = estimated.toFixed(6);
                     document.getElementById('minAmountOut').value = minOut.toFixed(6);
                     
@@ -657,6 +753,13 @@
                     const rate = (estimated / parseFloat(amountIn)).toFixed(6);
                     
                     document.getElementById('exchangeRate').textContent = `1 ${tokenInName} = ${rate} ${tokenOutName}`;
+                    document.getElementById('minReceived').textContent = `${minOut.toFixed(6)} ${tokenOutName}`;
+                    document.getElementById('priceInfo').classList.remove('hidden');
+                } else {
+                    document.getElementById('estimatedAmount').textContent = '0.0';
+                    document.getElementById('usdValueIn').textContent = '$0.00';
+                    document.getElementById('usdValueOut').textContent = '$0.00';
+                }getElementById('exchangeRate').textContent = `1 ${tokenInName} = ${rate} ${tokenOutName}`;
                     document.getElementById('minReceived').textContent = `${minOut.toFixed(6)} ${tokenOutName}`;
                     document.getElementById('priceInfo').classList.remove('hidden');
                 } else {

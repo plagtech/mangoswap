@@ -1,12 +1,4 @@
-<!-- Approval Flow Indicator -->
-                        <div id="approvalIndicator" class="hidden mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-300 rounded-lg p-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <div id="step1" class="flex items-center gap-1">
-                                        <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs">1</div>
-                                        <span class="font-semibold text-blue-900 text-xs">Approve Token</span>
-                                    </div>
-                <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -31,8 +23,6 @@
                 <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-orange-300 transition-colors duration-300">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">📊 Slippage Settings</h3>
-                        
-                        <!-- Slippage Settings -->
                         <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
                             <label class="block text-sm font-bold text-orange-900 mb-3">Slippage Tolerance</label>
                             <div class="grid grid-cols-4 gap-2 mb-3">
@@ -47,7 +37,6 @@
                             </div>
                             <p class="text-xs text-orange-700 mt-2">⚠️ High slippage may result in unfavorable rates</p>
                         </div>
-                        
                         <button id="closeSettings" class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
                             Save Settings
                         </button>
@@ -445,7 +434,6 @@
                     return;
                 }
             } else {
-                // MetaMask - simplified detection
                 console.log('window.ethereum exists:', !!window.ethereum);
                 
                 if (!window.ethereum) {
@@ -453,7 +441,6 @@
                     return;
                 }
                 
-                // Use window.ethereum directly
                 ethereum = window.ethereum;
                 console.log('Using ethereum provider:', ethereum);
             }
@@ -645,14 +632,12 @@
                 const minOutWei = ethers.utils.parseEther(minOut);
                 
                 if (isInstant) {
-                    // Execute instant swap
                     console.log('Executing instant swap...');
                     console.log('Token In:', tokenIn);
                     console.log('Token Out:', tokenOut);
                     console.log('Amount:', amount);
                     console.log('Min Out:', minOut);
                     
-                    // If swapping ERC20 token, need to approve first
                     if (tokenIn !== '0x0000000000000000000000000000000000000000') {
                         console.log('Approving token...');
                         const tokenContract = new ethers.Contract(
@@ -690,7 +675,6 @@
                     alert('✅ Swap executed successfully! Check your wallet for tokens.');
                     
                 } else {
-                    // Schedule swap for later
                     const date = document.getElementById('executionDate').value;
                     const time = document.getElementById('executionTime').value;
                     if (!date || !time) {
@@ -704,7 +688,6 @@
                         return;
                     }
                     
-                    // If swapping ERC20 token, need to approve first
                     if (tokenIn !== '0x0000000000000000000000000000000000000000') {
                         console.log('Approving token for scheduled swap...');
                         const tokenContract = new ethers.Contract(
@@ -767,7 +750,6 @@
                     errorMsg += e.message || 'Unknown error';
                 }
                 
-                // Check console for more details
                 errorMsg += '\n\nCheck browser console (F12) for detailed error logs.';
                 
                 alert(errorMsg);

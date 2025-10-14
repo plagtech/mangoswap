@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <div id="mainContent" class="hidden">
+        <div id="mainContent">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-xl shadow-lg p-6 border-2 border-orange-200 transition-colors duration-300">
                     <div class="text-sm text-orange-700 font-semibold">Total Swaps</div>
@@ -102,7 +102,7 @@
                         <div class="bg-white border-3 border-orange-300 rounded-2xl p-4 shadow-lg transition-colors duration-300">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-orange-700">From</label>
-                                <div class="text-right">
+                                <div class="text-right" id="balanceSection" style="display:none;">
                                     <div class="text-xs text-gray-600">Balance: <span id="balanceFrom" class="font-semibold">-</span></div>
                                     <button id="maxBtn" class="text-xs bg-orange-200 hover:bg-orange-300 text-orange-800 font-bold px-2 py-1 rounded transition">MAX</button>
                                 </div>
@@ -222,8 +222,8 @@
                             </div>
                         </div>
 
-                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white">
-                            🥭 Schedule Swap 🌴
+                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-5 rounded-2xl transition text-xl shadow-2xl transform hover:scale-105 border-4 border-white disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="btnText">🔗 Connect Wallet to Swap</span>
                         </button>
                         
                         <!-- Approval Flow Indicator -->
@@ -264,6 +264,7 @@
         let provider, signer, contract, account, isOwner = false;
         let quoteTimeout;
         let selectedWallet = null;
+        let isConnected = false;
         
         // Settings state
         let slippageTolerance = 5;
@@ -303,6 +304,9 @@
 
         // Initialize settings
         loadSettings();
+        
+        // Disable button initially
+        document.getElementById('scheduleSwapBtn').disabled = true;
 
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {
@@ -343,11 +347,15 @@
         document.getElementById('amountIn').addEventListener('input', debounceQuote);
         document.getElementById('tokenIn').addEventListener('change', () => {
             getQuote();
-            updateBalance();
+            if (isConnected) updateBalance();
         });
         document.getElementById('tokenOut').addEventListener('change', getQuote);
         
         document.getElementById('maxBtn').addEventListener('click', () => {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                return;
+            }
             document.getElementById('amountIn').value = userBalanceFrom;
             getQuote();
         });
@@ -576,6 +584,12 @@
         }
 
         async function scheduleSwap() {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                showWalletModal();
+                return;
+            }
+            
             let tokenIn = document.getElementById('tokenIn').value;
             let tokenOut = document.getElementById('tokenOut').value;
             

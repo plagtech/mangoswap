@@ -653,20 +653,47 @@
                 if (isInstant) {
                     // Execute instant swap
                     console.log('Executing instant swap...');
-                    const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { value: amountWei }) :
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei);
+                    console.log('Token In:', tokenIn);
+                    console.log('Token Out:', tokenOut);
+                    console.log('Amount:', amount);
+                    console.log('Min Out:', minOut);
+                    
+                    // If swapping ERC20 token, need to approve first
+                    if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                        console.log('Approving token...');
+                        const tokenContract = new ethers.Contract(
+                            tokenIn,
+                            ['function approve(address spender, uint256 amount) external returns (bool)'],
+                            signer
+                        );
+                        
+                        const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+                        document.getElementById('btnText').textContent = 'Approving... ⏳';
+                        document.getElementById('scheduleSwapBtn').disabled = true;
+                        await approveTx.wait();
+                        console.log('Token approved');
+                    }
                     
                     document.getElementById('btnText').textContent = 'Swapping... ⏳';
                     document.getElementById('scheduleSwapBtn').disabled = true;
                     
+                    const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
+                            value: amountWei,
+                            gasLimit: 500000 
+                        }) :
+                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, {
+                            gasLimit: 500000
+                        });
+                    
+                    console.log('Transaction sent:', tx.hash);
                     const receipt = await tx.wait();
+                    console.log('Transaction confirmed:', receipt);
                     
                     document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
                     document.getElementById('scheduleSwapBtn').disabled = false;
                     
                     alert('✅ Swap executed successfully! Check your wallet for tokens.');
-                    console.log('Swap receipt:', receipt);
                     
                 } else {
                     // Schedule swap for later
@@ -683,11 +710,33 @@
                         return;
                     }
                     
+                    // If swapping ERC20 token, need to approve first
+                    if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                        console.log('Approving token for scheduled swap...');
+                        const tokenContract = new ethers.Contract(
+                            tokenIn,
+                            ['function approve(address spender, uint256 amount) external returns (bool)'],
+                            signer
+                        );
+                        
+                        const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+                        document.getElementById('btnText').textContent = 'Approving... ⏳';
+                        document.getElementById('scheduleSwapBtn').disabled = true;
+                        await approveTx.wait();
+                        console.log('Token approved');
+                    }
+                    
+                    document.getElementById('btnText').textContent = 'Scheduling... ⏳';
+                    
                     const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
                         await contract.scheduleSwap(tokenIn, tokenOut, amountWei, minOutWei, execTime, { value: amountWei }) :
                         await contract.scheduleSwap(tokenIn, tokenOut, amountWei, minOutWei, execTime);
                     
                     await tx.wait();
+                    
+                    document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
+                    document.getElementById('scheduleSwapBtn').disabled = false;
+                    
                     alert('📅 Swap scheduled! It will execute automatically at the scheduled time.');
                 }
                 
@@ -704,9 +753,30 @@
                 }
             } catch (e) {
                 console.error('Swap error:', e);
+                console.error('Error details:', e.error);
+                console.error('Error data:', e.data);
+                
                 document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
                 document.getElementById('scheduleSwapBtn').disabled = false;
-                alert('Failed: ' + (e.reason || e.message));
+                
+                let errorMsg = 'Swap failed: ';
+                
+                if (e.code === 'INSUFFICIENT_FUNDS') {
+                    errorMsg += 'Insufficient funds for gas or swap amount';
+                } else if (e.message.includes('user rejected')) {
+                    errorMsg += 'Transaction was rejected';
+                } else if (e.reason) {
+                    errorMsg += e.reason;
+                } else if (e.error?.message) {
+                    errorMsg += e.error.message;
+                } else {
+                    errorMsg += e.message || 'Unknown error';
+                }
+                
+                // Check console for more details
+                errorMsg += '\n\nCheck browser console (F12) for detailed error logs.';
+                
+                alert(errorMsg);
             }
         }
 

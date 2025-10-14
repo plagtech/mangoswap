@@ -16,33 +16,17 @@
                     <p class="text-gray-700 mt-1 font-medium">Sweet Swaps on Base 🌴</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="settingsBtn" class="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-4 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">
-                        ⚙️ Settings
-                    </button>
                     <button id="connectBtn" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg transition transform hover:scale-105">Connect Wallet</button>
                 </div>
                 
-                <!-- Settings Modal -->
+                <!-- Slippage Settings Modal -->
                 <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-purple-300 transition-colors duration-300">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">⚙️ Settings</h3>
-                        
-                        <!-- Theme Toggle -->
-                        <div class="mb-6 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border-2 border-purple-200">
-                            <label class="block text-sm font-bold text-purple-900 mb-3">🎨 Theme</label>
-                            <div class="flex gap-3">
-                                <button id="lightTheme" class="flex-1 py-2 px-4 rounded-lg font-semibold transition bg-white border-2 border-purple-300 text-purple-900">
-                                    ☀️ Light
-                                </button>
-                                <button id="darkTheme" class="flex-1 py-2 px-4 rounded-lg font-semibold transition border-2 border-gray-600 text-gray-600">
-                                    🌙 Dark
-                                </button>
-                            </div>
-                        </div>
+                    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-orange-300 transition-colors duration-300">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">📊 Slippage Settings</h3>
                         
                         <!-- Slippage Settings -->
                         <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
-                            <label class="block text-sm font-bold text-orange-900 mb-3">📊 Slippage Tolerance</label>
+                            <label class="block text-sm font-bold text-orange-900 mb-3">Slippage Tolerance</label>
                             <div class="grid grid-cols-4 gap-2 mb-3">
                                 <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition border-2 border-orange-200 hover:border-orange-400" data-value="0.5">0.5%</button>
                                 <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition border-2 border-orange-200 hover:border-orange-400" data-value="1">1%</button>
@@ -56,7 +40,7 @@
                             <p class="text-xs text-orange-700 mt-2">⚠️ High slippage may result in unfavorable rates</p>
                         </div>
                         
-                        <button id="closeSettings" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition">
+                        <button id="closeSettings" class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
                             Save Settings
                         </button>
                     </div>
@@ -114,7 +98,7 @@
                         <p class="text-sm text-orange-900 font-medium">🌴 <strong>How it works:</strong> Schedule your token swaps to execute automatically at your chosen time. Perfect for DCA strategies, timed entries/exits, or avoiding emotional trading!</p>
                     </div>
 
-                    <div class="max-w-lg mx-auto space-y-4">
+                    <div class="max-w-md mx-auto space-y-4">
                         <div class="bg-white border-3 border-orange-300 rounded-2xl p-4 shadow-lg transition-colors duration-300">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-sm font-bold text-orange-700">From</label>
@@ -183,7 +167,7 @@
                                     <span id="exchangeRate" class="font-bold">-</span>
                                 </div>
                                 <div class="flex justify-between text-green-800">
-                                    <span class="font-semibold">Minimum received (<span id="slippageDisplay">5</span>% slippage):</span>
+                                    <span class="font-semibold">Min received (<span id="slippageDisplay">5</span>% slippage) <button id="editSlippageBtn" class="text-orange-600 hover:text-orange-700 ml-1">⚙️</button>:</span>
                                     <span id="minReceived" class="font-bold">-</span>
                                 </div>
                             </div>
@@ -256,57 +240,13 @@
         let selectedWallet = null;
         
         // Settings state
-        let currentTheme = 'light';
         let slippageTolerance = 5;
 
         // Load saved settings
         function loadSettings() {
-            const savedTheme = localStorage.getItem('mangoswap_theme') || 'light';
             const savedSlippage = localStorage.getItem('mangoswap_slippage') || '5';
-            currentTheme = savedTheme;
             slippageTolerance = parseFloat(savedSlippage);
-            applyTheme(currentTheme);
             updateSlippageUI();
-        }
-
-        // Apply theme
-        function applyTheme(theme) {
-            const body = document.body;
-            const isDark = theme === 'dark';
-            
-            if (isDark) {
-                body.classList.remove('bg-gradient-to-br', 'from-orange-100', 'via-yellow-50', 'to-green-100');
-                body.classList.add('bg-gradient-to-br', 'from-gray-900', 'via-gray-800', 'to-gray-900');
-                
-                document.querySelectorAll('.bg-white').forEach(el => {
-                    el.classList.remove('bg-white');
-                    el.classList.add('bg-gray-800', 'text-white');
-                });
-                
-                document.querySelectorAll('.text-gray-700, .text-gray-800, .text-gray-600').forEach(el => {
-                    el.classList.add('text-gray-200');
-                });
-                
-                document.getElementById('lightTheme').classList.remove('bg-white', 'border-purple-300', 'text-purple-900');
-                document.getElementById('lightTheme').classList.add('border-gray-600', 'text-gray-400');
-                document.getElementById('darkTheme').classList.remove('border-gray-600', 'text-gray-600');
-                document.getElementById('darkTheme').classList.add('bg-gray-700', 'border-purple-400', 'text-white');
-            } else {
-                body.classList.remove('bg-gradient-to-br', 'from-gray-900', 'via-gray-800', 'to-gray-900');
-                body.classList.add('bg-gradient-to-br', 'from-orange-100', 'via-yellow-50', 'to-green-100');
-                
-                document.querySelectorAll('.bg-gray-800').forEach(el => {
-                    el.classList.remove('bg-gray-800', 'text-white');
-                    el.classList.add('bg-white');
-                });
-                
-                document.getElementById('darkTheme').classList.remove('bg-gray-700', 'border-purple-400', 'text-white');
-                document.getElementById('darkTheme').classList.add('border-gray-600', 'text-gray-600');
-                document.getElementById('lightTheme').classList.remove('border-gray-600', 'text-gray-400');
-                document.getElementById('lightTheme').classList.add('bg-white', 'border-purple-300', 'text-purple-900');
-            }
-            
-            localStorage.setItem('mangoswap_theme', theme);
         }
 
         // Update slippage UI
@@ -328,24 +268,13 @@
         // Initialize settings
         loadSettings();
 
-        // Settings button
-        document.getElementById('settingsBtn').addEventListener('click', () => {
+        // Edit slippage button
+        document.getElementById('editSlippageBtn').addEventListener('click', () => {
             document.getElementById('settingsModal').classList.remove('hidden');
         });
 
         document.getElementById('closeSettings').addEventListener('click', () => {
             document.getElementById('settingsModal').classList.add('hidden');
-        });
-
-        // Theme toggle
-        document.getElementById('lightTheme').addEventListener('click', () => {
-            currentTheme = 'light';
-            applyTheme('light');
-        });
-
-        document.getElementById('darkTheme').addEventListener('click', () => {
-            currentTheme = 'dark';
-            applyTheme('dark');
         });
 
         // Slippage buttons

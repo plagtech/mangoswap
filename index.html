@@ -8,380 +8,560 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen">
-    <div class="container mx-auto px-4 py-4 max-w-3xl">
-        <!-- Copy all code and save as mangoswap.html -->
-        <!-- Your new contract address: 0x15ab98be32ede727dc804ef8ad5c983b8658f63b -->
-        <div class="bg-white rounded-xl shadow-lg p-4 mb-4 border-2 border-orange-300">
-            <div class="flex items-center justify-between flex-wrap gap-3">
-                <div>
-                    <h1 class="text-3xl font-bold">🥭 <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span></h1>
-                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base 🌴</p>
-                </div>
-                <button id="connectBtn" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-5 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105">Connect Wallet</button>
-                
-                <!-- Wallet Modal -->
-                <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 border-4 border-orange-300">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Connect Wallet</h3>
-                        <div class="space-y-3">
-                            <button id="connectMetaMask" class="w-full bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                                🦊 MetaMask
-                            </button>
-                            <button id="connectCoinbase" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                                💼 Coinbase Wallet
-                            </button>
-                        </div>
-                        <p class="mt-3 text-xs text-center text-gray-500">Make sure you're on Base network</p>
-                        <button id="closeModal" class="mt-4 w-full text-gray-600 hover:text-gray-800 font-semibold">Cancel</button>
+<body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen"><div class="container mx-auto px-4 py-4 max-w-3xl">
+    <div class="bg-white rounded-xl shadow-lg p-4 mb-4 border-2 border-orange-300">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+                <h1 class="text-3xl font-bold">🥭 <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span></h1>
+                <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base 🌴</p>
+            </div>
+            <button id="connectBtn" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-5 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105">Connect Wallet</button>
+            
+            <!-- Wallet Modal -->
+            <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 border-4 border-orange-300">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Connect Wallet</h3>
+                    <div class="space-y-3">
+                        <button id="connectMetaMask" class="w-full bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition">🦊 MetaMask</button>
+                        <button id="connectCoinbase" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition">💼 Coinbase Wallet</button>
+                        <button id="connectPhantom" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition">👻 Phantom</button>
                     </div>
-                </div>
-                
-                <div id="accountInfo" class="hidden text-right">
-                    <div class="text-xs text-gray-600">Connected</div>
-                    <div id="accountAddress" class="font-mono text-xs bg-orange-100 px-2 py-1 rounded border border-orange-300"></div>
+                    <p class="mt-3 text-xs text-center text-gray-500">Make sure you're on Base network</p>
+                    <button id="closeModal" class="mt-4 w-full text-gray-600 hover:text-gray-800 font-semibold">Cancel</button>
                 </div>
             </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-orange-300">
-            <div class="flex border-b-2 border-orange-200">
-                <button id="swapTab" class="flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-sm">Swap</button>
-                <button id="limitTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-sm">Limit Order</button>
-                <button id="ordersTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-sm">My Orders</button>
-            </div>
-
-            <!-- SWAP TAB -->
-            <div id="swapContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50">
-                <div class="max-w-md mx-auto space-y-3">
-                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl p-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl">⚡</span>
-                            <div>
-                                <h3 class="font-bold text-purple-900 text-sm">Instant Swap</h3>
-                                <p class="text-xs text-purple-700">Swap at current market price</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="text-xs font-bold text-orange-700">From</label>
-                            <div class="text-right" id="balanceSection" style="display:none;">
-                                <div class="text-xs text-gray-600">Balance: <span id="balanceFrom">-</span></div>
-                                <button id="maxBtn" class="text-xs bg-orange-200 hover:bg-orange-300 text-orange-800 font-bold px-2 py-0.5 rounded">MAX</button>
-                            </div>
-                        </div>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="flex-1 text-2xl font-bold bg-transparent border-none outline-none">
-                            <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
-                                <option value="0x0000000000000000000000000000000000000000">ETH</option>
-                                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-center -my-1">
-                        <button id="swapArrow" class="bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg p-2 shadow-lg transition transform hover:rotate-180">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
-                        <label class="text-xs font-bold text-green-700 mb-2 block">To (estimated)</label>
-                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                            <div class="flex-1 text-2xl font-bold" id="estimatedAmount">0.0</div>
-                            <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
-                                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
-                                <option value="0x0000000000000000000000000000000000000000">ETH</option>
-                            </select>
-                        </div>
-                        <input type="hidden" id="minAmountOut">
-                    </div>
-
-                    <button id="swapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-3 rounded-xl shadow-xl transform hover:scale-105 disabled:opacity-50" disabled>
-                        <span id="swapBtnText">🔗 Connect Wallet</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- LIMIT ORDER TAB -->
-            <div id="limitContent" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 hidden">
-                <div class="max-w-md mx-auto space-y-3">
-                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-2xl">🎯</span>
-                            <div>
-                                <h3 class="font-bold text-indigo-900 text-sm">Limit Order</h3>
-                                <p class="text-xs text-indigo-700">Set target price, execute automatically</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
-                        <label class="text-xs font-bold text-orange-700 mb-2 block">You Pay</label>
-                        <div class="flex gap-2">
-                            <input type="number" step="0.001" id="amountInLimit" placeholder="0.0" class="flex-1 text-2xl font-bold bg-transparent border-none outline-none">
-                            <select id="tokenInLimit" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
-                                <option value="0x0000000000000000000000000000000000000000">ETH</option>
-                                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
-                        <label class="text-xs font-bold text-green-700 mb-2 block">You Receive</label>
-                        <select id="tokenOutLimit" class="w-full bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
-                            <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
-                            <option value="0x0000000000000000000000000000000000000000">ETH</option>
-                        </select>
-                    </div>
-
-                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
-                        <h3 class="font-bold text-indigo-800 mb-2 text-sm">🎯 Target Price</h3>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xs font-semibold">When 1 <span id="targetTokenIn">TOKEN</span> =</span>
-                            <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 px-3 py-2 border-2 border-indigo-200 rounded-lg font-bold text-center">
-                            <span class="text-xs font-semibold" id="targetTokenOut">TOKEN</span>
-                        </div>
-                        <p class="text-xs text-indigo-700 bg-indigo-100 p-2 rounded">💡 Order executes when market reaches your price</p>
-                    </div>
-
-                    <button id="limitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl shadow-xl transform hover:scale-105 disabled:opacity-50" disabled>
-                        <span id="limitBtnText">🔗 Connect Wallet</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- MY ORDERS TAB -->
-            <div id="ordersContent" class="p-4 hidden">
-                <div id="ordersList" class="space-y-3">
-                    <div class="text-center py-12 text-gray-500">
-                        <p>No orders yet! 🥭</p>
-                        <p class="text-sm mt-2">Create a swap or limit order to get started</p>
-                    </div>
-                </div>
+            
+            <div id="accountInfo" class="hidden text-right">
+                <div class="text-xs text-gray-600">Connected</div>
+                <div id="accountAddress" class="font-mono text-xs bg-orange-100 px-2 py-1 rounded border border-orange-300"></div>
             </div>
         </div>
     </div>
 
-    <script>
-        const CONTRACT_ADDRESS = '0x15ab98be32ede727dc804ef8ad5c983b8658f63b';
-        const BASE_CHAIN_ID = '0x2105';
-        const ABI = [
-            "function instantSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external payable returns (uint256)",
-            "function createLimitOrder(address tokenIn, address tokenOut, uint256 amountIn, uint256 targetPrice, uint256 expiryTime) external payable returns (uint256)",
-            "function cancelLimitOrder(uint256 orderId) external",
-            "function getUserSwaps(address user) external view returns (uint256[])",
-            "function getUserLimitOrders(address user) external view returns (uint256[])",
-            "function getSwap(uint256 swapId) external view returns (tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256,uint8))",
-            "function getLimitOrder(uint256 orderId) external view returns (tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256,uint256))"
-        ];
+    <div class="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-orange-300">
+        <div class="flex border-b-2 border-orange-200">
+            <button id="swapTab" class="flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-sm">Swap</button>
+            <button id="limitTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-sm">Limit Order</button>
+            <button id="ordersTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-sm">My Orders</button>
+        </div><!-- SWAP TAB -->
+        <div id="swapContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50">
+            <div class="max-w-md mx-auto space-y-3">
+                <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
+                    <label class="text-xs font-bold text-orange-700 mb-2 block">From</label>
+                    <div class="flex gap-2">
+                        <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="flex-1 text-2xl font-bold bg-transparent border-none outline-none">
+                        <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
+                            <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                            <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                            <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                            <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                            <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                            <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                            <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                            <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                            <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                            <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                            <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                            <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                            <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                        </select>
+                    </div>
+                </div>
 
-        let provider, signer, contract, account;
+                <div class="flex justify-center -my-1">
+                    <button id="swapArrow" class="bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-lg p-2 shadow-lg transition transform hover:rotate-180">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                        </svg>
+                    </button>
+                </div>
 
-        // Connect wallet
-        document.getElementById('connectBtn').addEventListener('click', () => {
-            document.getElementById('walletModal').classList.remove('hidden');
-        });
+                <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
+                    <label class="text-xs font-bold text-green-700 mb-2 block">To</label>
+                    <div class="flex gap-2">
+                        <div class="flex-1 text-2xl font-bold" id="estimatedAmount">0.0</div>
+                        <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
+                            <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                            <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                            <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                            <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                            <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                            <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                            <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                            <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                            <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                            <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                            <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                            <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                            <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                        </select>
+                    </div>
+                    <input type="hidden" id="minAmountOut">
+                </div>
 
-        document.getElementById('closeModal').addEventListener('click', () => {
-            document.getElementById('walletModal').classList.add('hidden');
-        });
+                <!-- Scheduling Options -->
+                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-3">
+                    <h3 class="font-bold text-orange-800 mb-2 text-sm">⏰ Execution Time</h3>
+                    <div class="space-y-2 mb-2">
+                        <label class="flex items-center space-x-2 cursor-pointer bg-white p-2 rounded-lg border border-yellow-200">
+                            <input type="radio" name="timeOption" value="now" id="timeNow" checked class="w-4 h-4">
+                            <span class="font-bold text-gray-800 text-sm">Swap Now ⚡</span>
+                        </label>
+                        <label class="flex items-center space-x-2 cursor-pointer bg-white p-2 rounded-lg border border-yellow-200">
+                            <input type="radio" name="timeOption" value="scheduled" id="timeScheduled" class="w-4 h-4">
+                            <span class="font-bold text-gray-800 text-sm">Schedule for Later 📅</span>
+                        </label>
+                    </div>
+                    <div id="scheduledTimeInputs" class="grid grid-cols-2 gap-2 hidden">
+                        <input type="date" id="executionDate" class="px-2 py-1 border-2 border-orange-200 rounded-lg text-sm">
+                        <input type="time" id="executionTime" class="px-2 py-1 border-2 border-orange-200 rounded-lg text-sm">
+                    </div>
+                </div>
 
-        document.getElementById('connectMetaMask').addEventListener('click', () => connectWallet('metamask'));
-        document.getElementById('connectCoinbase').addEventListener('click', () => connectWallet('coinbase'));
+                <button id="swapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 text-white font-black py-3 rounded-xl shadow-xl disabled:opacity-50" disabled>
+                    <span id="swapBtnText">🔗 Connect Wallet</span>
+                </button>
+            </div>
+        </div><!-- LIMIT ORDER TAB -->
+        <div id="limitContent" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 hidden">
+            <div class="max-w-md mx-auto space-y-3">
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">🎯</span>
+                        <div>
+                            <h3 class="font-bold text-indigo-900 text-sm">Limit Order</h3>
+                            <p class="text-xs text-indigo-700">Set target price, execute automatically</p>
+                        </div>
+                    </div>
+                </div>
 
-        async function connectWallet(type) {
-            document.getElementById('walletModal').classList.add('hidden');
-            
-            if (!window.ethereum) {
-                alert('No wallet detected! Install MetaMask or Coinbase Wallet.');
-                return;
-            }
+                <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
+                    <label class="text-xs font-bold text-orange-700 mb-2 block">You Pay</label>
+                    <div class="flex gap-2">
+                        <input type="number" step="0.001" id="amountInLimit" placeholder="0.0" class="flex-1 text-2xl font-bold bg-transparent border-none outline-none">
+                        <select id="tokenInLimit" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
+                            <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                            <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                            <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                            <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                            <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                            <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                            <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                            <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                            <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                            <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                            <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                            <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                            <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                        </select>
+                    </div>
+                </div>
 
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-                
-                if (chainId !== BASE_CHAIN_ID) {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: BASE_CHAIN_ID }],
-                    });
-                }
-                
-                account = accounts[0];
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-                
-                document.getElementById('connectBtn').classList.add('hidden');
-                document.getElementById('accountInfo').classList.remove('hidden');
-                document.getElementById('accountAddress').textContent = account.slice(0,6) + '...' + account.slice(-4);
-                document.getElementById('balanceSection').style.display = 'block';
-                document.getElementById('swapBtn').disabled = false;
-                document.getElementById('swapBtnText').textContent = '🥭 Swap Now';
-                document.getElementById('limitBtn').disabled = false;
-                document.getElementById('limitBtnText').textContent = '🎯 Create Order';
-                
-                loadOrders();
-            } catch (e) {
-                alert('Failed to connect: ' + e.message);
-            }
-        }
+                <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
+                    <label class="text-xs font-bold text-green-700 mb-2 block">You Receive</label>
+                    <select id="tokenOutLimit" class="w-full bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
+                        <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                        <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                        <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                        <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                        <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                        <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                        <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                        <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                        <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                        <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                        <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                        <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                        <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                    </select>
+                </div>
 
-        // Tab switching
-        document.getElementById('swapTab').addEventListener('click', () => switchTab('swap'));
-        document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
-        document.getElementById('ordersTab').addEventListener('click', () => switchTab('orders'));
+                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
+                    <h3 class="font-bold text-indigo-800 mb-2 text-sm">🎯 Target Price</h3>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs font-semibold">When 1 <span id="targetTokenIn">TOKEN</span> =</span>
+                        <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 px-3 py-2 border-2 border-indigo-200 rounded-lg font-bold text-center">
+                        <span class="text-xs font-semibold" id="targetTokenOut">TOKEN</span>
+                    </div>
+                    <p class="text-xs text-indigo-700 bg-indigo-100 p-2 rounded">💡 Order executes when market reaches your price</p>
+                </div>
 
-        function switchTab(tab) {
-            ['swapTab', 'limitTab', 'ordersTab'].forEach(t => {
-                document.getElementById(t).classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById(t).classList.add('text-gray-600');
-            });
-            
-            ['swapContent', 'limitContent', 'ordersContent'].forEach(c => {
-                document.getElementById(c).classList.add('hidden');
-            });
-            
-            if (tab === 'swap') {
-                document.getElementById('swapTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapContent').classList.remove('hidden');
-            } else if (tab === 'limit') {
-                document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('limitContent').classList.remove('hidden');
+                <button id="limitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-black py-3 rounded-xl shadow-xl disabled:opacity-50" disabled>
+                    <span id="limitBtnText">🔗 Connect Wallet</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MY ORDERS TAB -->
+        <div id="ordersContent" class="p-4 hidden">
+            <div id="ordersList">
+                <div class="text-center py-12 text-gray-500">
+                    <p>No orders yet! 🥭</p>
+                    <p class="text-sm mt-2">Create a swap or limit order to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><script>
+    const CONTRACT_ADDRESS = '0x15ab98be32ede727dc804ef8ad5c983b8658f63b';
+    const BASE_CHAIN_ID = '0x2105';
+    
+    const ABI = [
+        "function instantSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external payable returns (uint256)",
+        "function scheduleSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut, uint256 executionTime) external payable returns (uint256)",
+        "function createLimitOrder(address tokenIn, address tokenOut, uint256 amountIn, uint256 targetPrice, uint256 expiryTime) external payable returns (uint256)",
+        "function executeScheduledSwap(uint256 swapId) external",
+        "function executeLimitOrder(uint256 orderId) external",
+        "function cancelSwap(uint256 swapId) external",
+        "function cancelLimitOrder(uint256 orderId) external",
+        "function getSwap(uint256 swapId) external view returns (tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256,uint8))",
+        "function getLimitOrder(uint256 orderId) external view returns (tuple(uint256,address,address,address,uint256,uint256,uint256,uint8,uint256,uint256,uint256))",
+        "function getUserSwaps(address user) external view returns (uint256[])",
+        "function getUserLimitOrders(address user) external view returns (uint256[])"
+    ];
+
+    const TOKENS = {
+        '0x0000000000000000000000000000000000000000':'ETH',
+        '0x4200000000000000000000000000000000000006':'WETH',
+        '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC',
+        '0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI',
+        '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf':'cbBTC',
+        '0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT',
+        '0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO',
+        '0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI',
+        '0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN',
+        '0xa88594d404727625a9437c3f886c7643872296ae':'WELL',
+        '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL',
+        '0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA',
+        '0x58d97b57bb95320f9a05dc918aef65434969c2b2':'MORPHO'
+    };
+
+    let provider, signer, contract, account;
+
+    // Connect wallet
+    document.getElementById('connectBtn').addEventListener('click', () => {
+        document.getElementById('walletModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('walletModal').classList.add('hidden');
+    });
+
+    document.getElementById('connectMetaMask').addEventListener('click', () => connectWallet('metamask'));
+    document.getElementById('connectCoinbase').addEventListener('click', () => connectWallet('coinbase'));
+    document.getElementById('connectPhantom').addEventListener('click', () => connectWallet('phantom'));
+
+    async function connectWallet(type) {
+        document.getElementById('walletModal').classList.add('hidden');
+        
+        let ethereum;
+        
+        if (type === 'phantom') {
+            if (window.phantom?.ethereum) {
+                ethereum = window.phantom.ethereum;
             } else {
-                document.getElementById('ordersTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('ordersContent').classList.remove('hidden');
-                if (account) loadOrders();
-            }
-        }
-
-        // Swap button
-        document.getElementById('swapBtn').addEventListener('click', async () => {
-            const tokenIn = document.getElementById('tokenIn').value;
-            const tokenOut = document.getElementById('tokenOut').value;
-            const amount = document.getElementById('amountIn').value;
-            const minOut = document.getElementById('minAmountOut').value || '0';
-
-            if (!amount || parseFloat(amount) <= 0) {
-                alert('Enter an amount');
+                alert('Phantom wallet not installed! Visit phantom.app');
                 return;
             }
+        } else if (type === 'coinbase') {
+            if (window.coinbaseWalletExtension) {
+                ethereum = window.coinbaseWalletExtension;
+            } else if (window.ethereum?.isCoinbaseWallet) {
+                ethereum = window.ethereum;
+            } else {
+                alert('Coinbase Wallet not detected!');
+                return;
+            }
+        } else {
+            if (!window.ethereum) {
+                alert('MetaMask not detected! Install from metamask.io');
+                return;
+            }
+            ethereum = window.ethereum;
+        }
 
-            try {
-                document.getElementById('swapBtnText').textContent = 'Swapping...⏳';
-                document.getElementById('swapBtn').disabled = true;
+        try {
+            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+            const chainId = await ethereum.request({ method: 'eth_chainId' });
+            
+            if (chainId !== BASE_CHAIN_ID) {
+                await ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: BASE_CHAIN_ID }],
+                }).catch(async (e) => {
+                    if (e.code === 4902) {
+                        await ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: BASE_CHAIN_ID,
+                                chainName: 'Base',
+                                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                                rpcUrls: ['https://mainnet.base.org'],
+                                blockExplorerUrls: ['https://basescan.org']
+                            }]
+                        });
+                    }
+                });
+            }
+            
+            account = accounts[0];
+            provider = new ethers.providers.Web3Provider(ethereum);
+            signer = provider.getSigner();
+            contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+            
+            document.getElementById('connectBtn').classList.add('hidden');
+            document.getElementById('accountInfo').classList.remove('hidden');
+            document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
+            
+            document.getElementById('swapBtn').disabled = false;
+            document.getElementById('swapBtnText').textContent = '🥭 Execute Swap';
+            document.getElementById('limitBtn').disabled = false;
+            document.getElementById('limitBtnText').textContent = '🎯 Create Order';
+            
+            loadOrders();
+            alert('✅ Wallet connected successfully!');
+        } catch (e) {
+            alert('Failed to connect: ' + e.message);
+        }
+    }// Tab switching
+    document.getElementById('swapTab').addEventListener('click', () => switchTab('swap'));
+    document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
+    document.getElementById('ordersTab').addEventListener('click', () => switchTab('orders'));
 
-                const amountWei = ethers.utils.parseEther(amount);
-                const minOutWei = ethers.utils.parseEther(minOut);
+    function switchTab(tab) {
+        ['swapTab', 'limitTab', 'ordersTab'].forEach(t => {
+            document.getElementById(t).classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById(t).classList.add('text-gray-600');
+        });
+        
+        ['swapContent', 'limitContent', 'ordersContent'].forEach(c => {
+            document.getElementById(c).classList.add('hidden');
+        });
+        
+        if (tab === 'swap') {
+            document.getElementById('swapTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById('swapTab').classList.remove('text-gray-600');
+            document.getElementById('swapContent').classList.remove('hidden');
+        } else if (tab === 'limit') {
+            document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById('limitTab').classList.remove('text-gray-600');
+            document.getElementById('limitContent').classList.remove('hidden');
+        } else {
+            document.getElementById('ordersTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById('ordersTab').classList.remove('text-gray-600');
+            document.getElementById('ordersContent').classList.remove('hidden');
+            if (account) loadOrders();
+        }
+    }
 
+    // Scheduled time toggle
+    document.getElementById('timeScheduled').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('scheduledTimeInputs').classList.remove('hidden');
+        }
+    });
+
+    document.getElementById('timeNow').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('scheduledTimeInputs').classList.add('hidden');
+        }
+    });
+
+    // Swap button
+    document.getElementById('swapBtn').addEventListener('click', async () => {
+        const tokenIn = document.getElementById('tokenIn').value;
+        const tokenOut = document.getElementById('tokenOut').value;
+        const amount = document.getElementById('amountIn').value;
+        const isScheduled = document.getElementById('timeScheduled').checked;
+
+        if (!amount || parseFloat(amount) <= 0) {
+            alert('Enter an amount');
+            return;
+        }
+
+        try {
+            document.getElementById('swapBtnText').textContent = 'Processing...⏳';
+            document.getElementById('swapBtn').disabled = true;
+
+            const amountWei = ethers.utils.parseEther(amount);
+            const minOutWei = ethers.utils.parseEther('0'); // Simplified for demo
+
+            if (isScheduled) {
+                const date = document.getElementById('executionDate').value;
+                const time = document.getElementById('executionTime').value;
+                if (!date || !time) {
+                    alert('Set execution date and time');
+                    document.getElementById('swapBtn').disabled = false;
+                    document.getElementById('swapBtnText').textContent = '🥭 Execute Swap';
+                    return;
+                }
+                const execTime = Math.floor(new Date(date + ' ' + time).getTime() / 1000);
+                
+                const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                    await contract.scheduleSwap(tokenIn, tokenOut, amountWei, minOutWei, execTime, { value: amountWei, gasLimit: 500000 }) :
+                    await contract.scheduleSwap(tokenIn, tokenOut, amountWei, minOutWei, execTime, { gasLimit: 500000 });
+
+                await tx.wait();
+                alert('📅 Swap scheduled successfully!');
+            } else {
                 const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
                     await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { value: amountWei, gasLimit: 500000 }) :
                     await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { gasLimit: 500000 });
 
                 await tx.wait();
-                alert('✅ Swap successful!');
-                document.getElementById('amountIn').value = '';
-                loadOrders();
-            } catch (e) {
-                alert('Swap failed: ' + e.message);
-            } finally {
-                document.getElementById('swapBtnText').textContent = '🥭 Swap Now';
-                document.getElementById('swapBtn').disabled = false;
+                alert('✅ Swap executed successfully!');
             }
-        });
 
-        // Limit order button
-        document.getElementById('limitBtn').addEventListener('click', async () => {
-            const tokenIn = document.getElementById('tokenInLimit').value;
-            const tokenOut = document.getElementById('tokenOutLimit').value;
-            const amount = document.getElementById('amountInLimit').value;
-            const targetPrice = document.getElementById('targetPrice').value;
+            document.getElementById('amountIn').value = '';
+            loadOrders();
+        } catch (e) {
+            alert('Swap failed: ' + e.message);
+        } finally {
+            document.getElementById('swapBtnText').textContent = '🥭 Execute Swap';
+            document.getElementById('swapBtn').disabled = false;
+        }
+    });
 
-            if (!amount || !targetPrice) {
-                alert('Fill all fields');
+    // Limit order button
+    document.getElementById('limitBtn').addEventListener('click', async () => {
+        const tokenIn = document.getElementById('tokenInLimit').value;
+        const tokenOut = document.getElementById('tokenOutLimit').value;
+        const amount = document.getElementById('amountInLimit').value;
+        const targetPrice = document.getElementById('targetPrice').value;
+
+        if (!amount || !targetPrice) {
+            alert('Fill all fields');
+            return;
+        }
+
+        try {
+            document.getElementById('limitBtnText').textContent = 'Creating...⏳';
+            document.getElementById('limitBtn').disabled = true;
+
+            const amountWei = ethers.utils.parseEther(amount);
+            const priceWei = ethers.utils.parseEther(targetPrice);
+
+            const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                await contract.createLimitOrder(tokenIn, tokenOut, amountWei, priceWei, 0, { value: amountWei, gasLimit: 500000 }) :
+                await contract.createLimitOrder(tokenIn, tokenOut, amountWei, priceWei, 0, { gasLimit: 500000 });
+
+            await tx.wait();
+            alert('🎯 Limit order created successfully!');
+            
+            document.getElementById('amountInLimit').value = '';
+            document.getElementById('targetPrice').value = '';
+            loadOrders();
+        } catch (e) {
+            alert('Failed: ' + e.message);
+        } finally {
+            document.getElementById('limitBtnText').textContent = '🎯 Create Order';
+            document.getElementById('limitBtn').disabled = false;
+        }
+    });// Load orders
+    async function loadOrders() {
+        if (!contract || !account) return;
+        
+        try {
+            const swapIds = await contract.getUserSwaps(account);
+            const limitIds = await contract.getUserLimitOrders(account);
+            
+            const swaps = await Promise.all(swapIds.map(async id => {
+                const s = await contract.getSwap(id);
+                return {
+                    id: s[0].toString(),
+                    tokenIn: s[2],
+                    tokenOut: s[3],
+                    amountIn: ethers.utils.formatEther(s[4]),
+                    executionTime: new Date(s[6].toNumber() * 1000),
+                    status: ['Scheduled', 'Executed', 'Cancelled', 'Failed'][s[7]],
+                    type: 'swap'
+                };
+            }));
+
+            const limits = await Promise.all(limitIds.map(async id => {
+                const lo = await contract.getLimitOrder(id);
+                return {
+                    id: lo[0].toString(),
+                    tokenIn: lo[2],
+                    tokenOut: lo[3],
+                    amountIn: ethers.utils.formatEther(lo[4]),
+                    targetPrice: ethers.utils.formatEther(lo[5]),
+                    status: ['Active', 'Executed', 'Cancelled', 'Failed'][lo[7]],
+                    type: 'limit'
+                };
+            }));
+
+            const allOrders = [...swaps, ...limits];
+            const list = document.getElementById('ordersList');
+            
+            if (allOrders.length === 0) {
+                list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No orders yet! 🥭</p></div>';
                 return;
             }
 
-            try {
-                document.getElementById('limitBtnText').textContent = 'Creating...⏳';
-                document.getElementById('limitBtn').disabled = true;
-
-                const amountWei = ethers.utils.parseEther(amount);
-                const priceWei = ethers.utils.parseEther(targetPrice);
-
-                const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, priceWei, 0, { value: amountWei, gasLimit: 500000 }) :
-                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, priceWei, 0, { gasLimit: 500000 });
-
-                await tx.wait();
-                alert('🎯 Limit order created!');
-                document.getElementById('amountInLimit').value = '';
-                document.getElementById('targetPrice').value = '';
-                loadOrders();
-            } catch (e) {
-                alert('Failed: ' + e.message);
-            } finally {
-                document.getElementById('limitBtnText').textContent = '🎯 Create Order';
-                document.getElementById('limitBtn').disabled = false;
-            }
-        });
-
-        async function loadOrders() {
-            if (!contract || !account) return;
-            
-            try {
-                const limitIds = await contract.getUserLimitOrders(account);
-                const list = document.getElementById('ordersList');
+            list.innerHTML = allOrders.map(o => {
+                const tokenInName = TOKENS[o.tokenIn.toLowerCase()] || 'TOKEN';
+                const tokenOutName = TOKENS[o.tokenOut.toLowerCase()] || 'TOKEN';
                 
-                if (limitIds.length === 0) {
-                    list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No orders yet! 🥭</p></div>';
-                    return;
-                }
-
-                const orders = await Promise.all(limitIds.map(async id => {
-                    const lo = await contract.getLimitOrder(id);
-                    return {
-                        id: lo[0].toString(),
-                        tokenIn: lo[2],
-                        tokenOut: lo[3],
-                        amountIn: ethers.utils.formatEther(lo[4]),
-                        targetPrice: ethers.utils.formatEther(lo[5]),
-                        status: ['Active', 'Executed', 'Cancelled'][lo[7]]
-                    };
-                }));
-
-                list.innerHTML = orders.map(o => `
-                    <div class="border-2 border-indigo-200 rounded-xl p-4 bg-gradient-to-r from-indigo-50 to-purple-50">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="px-3 py-1 rounded-full text-sm font-bold ${o.status === 'Active' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100'}">${o.status}</span>
-                            <div class="text-right">
-                                <div class="font-bold">${o.amountIn} → Target: ${o.targetPrice}</div>
+                if (o.type === 'limit') {
+                    return `
+                        <div class="border-2 border-indigo-200 rounded-xl p-4 mb-3 bg-gradient-to-r from-indigo-50 to-purple-50">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-3 py-1 rounded-full text-sm font-bold ${o.status === 'Active' ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100'}">🎯 ${o.status} Limit</span>
+                                <div class="text-right">
+                                    <div class="font-bold">${o.amountIn} ${tokenInName} → ${tokenOutName}</div>
+                                    <div class="text-sm text-indigo-700">Target: ${o.targetPrice} ${tokenOutName}</div>
+                                </div>
                             </div>
+                            ${o.status === 'Active' ? `<button onclick="cancelOrder(${o.id}, 'limit')" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-bold">Cancel</button>` : ''}
                         </div>
-                        ${o.status === 'Active' ? `<button onclick="cancelOrder(${o.id})" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-bold">Cancel</button>` : ''}
-                    </div>
-                `).join('');
-            } catch (e) {
-                console.error('Load orders error:', e);
-            }
+                    `;
+                } else {
+                    return `
+                        <div class="border-2 border-orange-200 rounded-xl p-4 mb-3 bg-white">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-3 py-1 rounded-full text-sm font-bold ${o.status === 'Scheduled' ? 'bg-yellow-100 text-yellow-800' : o.status === 'Executed' ? 'bg-green-100 text-green-800' : 'bg-gray-100'}">⚡ ${o.status} Swap</span>
+                                <div class="text-right">
+                                    <div class="font-bold">${o.amountIn} ${tokenInName} → ${tokenOutName}</div>
+                                    <div class="text-sm text-gray-600">${o.executionTime.toLocaleString()}</div>
+                                </div>
+                            </div>
+                            ${o.status === 'Scheduled' ? `<button onclick="cancelOrder(${o.id}, 'swap')" class="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-bold">Cancel</button>` : ''}
+                        </div>
+                    `;
+                }
+            }).join('');
+        } catch (e) {
+            console.error('Load orders error:', e);
         }
+    }
 
-        window.cancelOrder = async (id) => {
-            try {
-                const tx = await contract.cancelLimitOrder(id);
-                await tx.wait();
-                alert('✅ Order cancelled!');
-                loadOrders();
-            } catch (e) {
-                alert('Failed: ' + e.message);
-            }
-        };
-    </script>
+    // Cancel order
+    window.cancelOrder = async (id, type) => {
+        try {
+            const tx = type === 'limit' ? 
+                await contract.cancelLimitOrder(id) : 
+                await contract.cancelSwap(id);
+            await tx.wait();
+            alert('✅ Order cancelled!');
+            loadOrders();
+        } catch (e) {
+            alert('Failed: ' + e.message);
+        }
+    };
+
+    // Update token names in limit order
+    document.getElementById('tokenInLimit').addEventListener('change', updateLimitTokenNames);
+    document.getElementById('tokenOutLimit').addEventListener('change', updateLimitTokenNames);
+
+    function updateLimitTokenNames() {
+        const tokenIn = document.getElementById('tokenInLimit').value;
+        const tokenOut = document.getElementById('tokenOutLimit').value;
+        document.getElementById('targetTokenIn').textContent = TOKENS[tokenIn.toLowerCase()] || 'TOKEN';
+        document.getElementById('targetTokenOut').textContent = TOKENS[tokenOut.toLowerCase()] || 'TOKEN';
+    }
+
+    updateLimitTokenNames();
+</script>
 </body>
 </html>

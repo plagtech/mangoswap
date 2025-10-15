@@ -16,6 +16,9 @@
                     <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base 🌴</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button id="buyEthBtn" class="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105 text-sm">
+                        💳 Buy ETH
+                    </button>
                     <button id="connectBtn" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-5 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105">Connect Wallet</button>
                 </div>
                 
@@ -317,6 +320,16 @@
         
         // Disable button initially
         document.getElementById('scheduleSwapBtn').disabled = true;
+
+        // Buy ETH button - Coinbase Onramp
+        document.getElementById('buyEthBtn').addEventListener('click', () => {
+            // Coinbase Onramp URL
+            const destinationWallet = account || ''; // Use connected wallet if available
+            const coinbaseOnrampUrl = `https://pay.coinbase.com/buy/select-asset?appId=mangoswap&destinationWallets=[{"address":"${destinationWallet}","blockchains":["base"],"assets":["ETH"]}]&defaultNetwork=base`;
+            
+            // Open in new window
+            window.open(coinbaseOnrampUrl, '_blank', 'width=500,height=700');
+        });
 
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {

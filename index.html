@@ -72,9 +72,10 @@
         <div id="mainContent">
             <div class="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-orange-300 transition-colors duration-300">
                 <div class="flex border-b-2 border-orange-200">
-                    <button id="scheduleTab" class="flex-1 px-4 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-sm">Schedule Swap</button>
-                    <button id="swapsTab" class="flex-1 px-4 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-sm">My Swaps</button>
-                </div>
+    <button id="scheduleTab" class="flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs sm:text-sm">Swap</button>
+    <button id="limitTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-xs sm:text-sm">Limit Order</button>
+    <button id="swapsTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-xs sm:text-sm">My Orders</button>
+</div>
 
                 <div id="scheduleContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50 transition-colors duration-300">
                     <div class="max-w-md mx-auto space-y-3">
@@ -247,6 +248,85 @@
                     
                     <div id="swapsList"></div>
                 </div>
+                <!-- LIMIT ORDER TAB -->
+<div id="limitContent" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 transition-colors duration-300 hidden">
+    <div class="max-w-md mx-auto space-y-3">
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3 mb-3">
+            <div class="flex items-center gap-2">
+                <span class="text-2xl">🎯</span>
+                <div>
+                    <h3 class="font-bold text-indigo-900 text-sm">Limit Order</h3>
+                    <p class="text-xs text-indigo-700">Set your target price, execute automatically</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
+            <label class="text-xs font-bold text-orange-700 mb-2 block">You Pay</label>
+            <div class="flex flex-col gap-2">
+                <input type="number" step="0.001" id="amountInLimit" placeholder="0.0" class="w-full text-2xl font-bold bg-transparent border-none outline-none">
+                <select id="tokenInLimit" class="w-full bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
+                    <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                    <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                    <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                    <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                    <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                    <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                    <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                    <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                    <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                    <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                    <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                    <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                    <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex justify-center -my-1 relative z-10">
+            <button id="swapArrowLimit" class="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
+            <label class="text-xs font-bold text-green-700 mb-2 block">You Receive</label>
+            <select id="tokenOutLimit" class="w-full bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
+                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                <option value="0x0000000000000000000000000000000000000000">ETH</option>
+                <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                <option value="0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf">cbBTC</option>
+                <option value="0x532f27101965dd16442E59d40670FaF5eBB142E4">BRETT</option>
+                <option value="0x940181a94A35A4569E4529A3CDfB74e38FD98631">AERO</option>
+                <option value="0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4">TOSHI</option>
+                <option value="0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed">DEGEN</option>
+                <option value="0xA88594D404727625A9437C3f886C7643872296AE">WELL</option>
+                <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
+                <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
+                <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+            </select>
+        </div>
+
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
+            <h3 class="font-bold text-indigo-800 mb-2 text-sm">🎯 Target Price</h3>
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-indigo-700">When 1</span>
+                <span id="targetTokenIn" class="text-xs font-bold text-indigo-900">ETH</span>
+                <span class="text-xs font-semibold text-indigo-700">=</span>
+                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 px-3 py-2 border-2 border-indigo-200 rounded-lg font-bold text-center">
+                <span id="targetTokenOut" class="text-xs font-bold text-indigo-900">USDC</span>
+            </div>
+            <p class="text-xs text-indigo-700 bg-indigo-100 p-2 rounded">💡 Order executes automatically when market reaches your target price</p>
+        </div>
+
+        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            <span id="limitBtnText">🔗 Connect Wallet</span>
+        </button>
+    </div>
+</div>
             </div>
         </div>
     </div>
@@ -360,6 +440,8 @@
         document.getElementById('connectPhantom').addEventListener('click', () => connectWallet('phantom'));
         document.getElementById('scheduleTab').addEventListener('click', () => switchTab('schedule'));
         document.getElementById('swapsTab').addEventListener('click', () => switchTab('swaps'));
+        document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
+document.getElementById('createLimitBtn').addEventListener('click', createLimitOrder);
         document.getElementById('scheduleSwapBtn').addEventListener('click', scheduleSwap);
         
         document.getElementById('amountIn').addEventListener('input', debounceQuote);
@@ -551,11 +633,28 @@
                     };
                 }));
                 
-                const scheduled = swaps.filter(s => s.status === 'Scheduled').length;
-                const executed = swaps.filter(s => s.status === 'Executed').length;
-                document.getElementById('scheduledCount').textContent = scheduled;
-                document.getElementById('executedCount').textContent = executed;
-                displaySwaps(swaps);
+                const limitIds = await contract.getUserLimitOrders(account);
+const limitOrders = await Promise.all(limitIds.map(async id => {
+    const lo = await contract.getLimitOrder(id);
+    return {
+        id: lo[0].toString(),
+        tokenIn: lo[2],
+        tokenOut: lo[3],
+        amountIn: ethers.utils.formatEther(lo[4]),
+        targetPrice: ethers.utils.formatEther(lo[5]),
+        status: ['Active', 'Executed', 'Cancelled', 'Failed'][lo[7]],
+        createdAt: new Date(lo[8].toNumber() * 1000),
+        type: 'limit'
+    };
+}));
+
+const allOrders = [...swaps, ...limitOrders];
+
+const scheduled = swaps.filter(s => s.status === 'Scheduled').length;
+const executed = swaps.filter(s => s.status === 'Executed').length;
+document.getElementById('scheduledCount').textContent = scheduled;
+document.getElementById('executedCount').textContent = executed;
+displaySwaps(allOrders);
             } catch (e) {
                 console.error('Load data error:', e);
             }
@@ -563,13 +662,27 @@
 
         function displaySwaps(swaps) {
             const list = document.getElementById('swapsList');
-            if (swaps.length === 0) {
+            if (orders.length === 0) {
                 list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No swaps scheduled yet!</p></div>';
                 return;
             }
-            list.innerHTML = swaps.map(s => {
+            list.innerHTML = orders.map(s => {
                 const tokenInName = TOKENS[s.tokenIn.toLowerCase()] || s.tokenIn.slice(0, 6) + '...';
-                const tokenOutName = TOKENS[s.tokenOut.toLowerCase()] || s.tokenOut.slice(0, 6) + '...';
+                const tokenOutName = TOKENS[s.tokenOut.toLowerCase()] || s.tokenOut.slice(0, 6) + '...';if (s.type === 'limit') {
+    return `
+    <div class="border-2 border-indigo-200 rounded-xl p-6 mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg">
+        <div class="flex justify-between items-start mb-4">
+            <span class="px-3 py-1 rounded-full text-sm font-semibold ${s.status === 'Active' ? 'bg-indigo-100 text-indigo-800' : s.status === 'Executed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">🎯 ${s.status} Limit</span>
+            <div class="text-right">
+                <div class="font-bold text-lg">${s.amountIn} ${tokenInName} → ${tokenOutName}</div>
+                <div class="text-sm text-indigo-700">Target: 1 ${tokenInName} = ${s.targetPrice} ${tokenOutName}</div>
+            </div>
+        </div>
+        <div class="text-xs text-gray-500 mb-3">Created: ${s.createdAt.toLocaleString()}</div>
+        ${s.status === 'Active' ? `<button onclick="cancelLimitOrder(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition">Cancel Order</button>` : ''}
+    </div>
+    `;
+}
                 return `
                 <div class="border-2 border-orange-200 rounded-xl p-6 mb-4 bg-white shadow-lg">
                     <div class="flex justify-between mb-4">
@@ -777,23 +890,38 @@
         }
 
         function switchTab(tab) {
-            if (tab === 'schedule') {
-                document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('scheduleTab').classList.remove('text-gray-600');
-                document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapsTab').classList.add('text-gray-600');
-                document.getElementById('scheduleContent').classList.remove('hidden');
-                document.getElementById('swapsContent').classList.add('hidden');
-            } else {
-                document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapsTab').classList.remove('text-gray-600');
-                document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('scheduleTab').classList.add('text-gray-600');
-                document.getElementById('swapsContent').classList.remove('hidden');
-                document.getElementById('scheduleContent').classList.add('hidden');
-            }
-        }
-
+    if (tab === 'schedule') {
+        document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('scheduleTab').classList.remove('text-gray-600');
+        document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('limitTab').classList.add('text-gray-600');
+        document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('swapsTab').classList.add('text-gray-600');
+        document.getElementById('scheduleContent').classList.remove('hidden');
+        document.getElementById('limitContent').classList.add('hidden');
+        document.getElementById('swapsContent').classList.add('hidden');
+    } else if (tab === 'limit') {
+        document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('limitTab').classList.remove('text-gray-600');
+        document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('scheduleTab').classList.add('text-gray-600');
+        document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('swapsTab').classList.add('text-gray-600');
+        document.getElementById('limitContent').classList.remove('hidden');
+        document.getElementById('scheduleContent').classList.add('hidden');
+        document.getElementById('swapsContent').classList.add('hidden');
+    } else {
+        document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('swapsTab').classList.remove('text-gray-600');
+        document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('scheduleTab').classList.add('text-gray-600');
+        document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+        document.getElementById('limitTab').classList.add('text-gray-600');
+        document.getElementById('swapsContent').classList.remove('hidden');
+        document.getElementById('scheduleContent').classList.add('hidden');
+        document.getElementById('limitContent').classList.add('hidden');
+    }
+}
         document.getElementById('withdrawBtn')?.addEventListener('click', async () => {
             try {
                 const tx = await contract.withdrawFees();
@@ -919,7 +1047,78 @@
                 document.getElementById('estimatedAmount').textContent = '~';
                 document.getElementById('priceLoading').classList.add('hidden');
             }
+        }async function createLimitOrder() {
+    if (!isConnected) {
+        alert('Please connect your wallet first');
+        showWalletModal();
+        return;
+    }
+    
+    const tokenIn = document.getElementById('tokenInLimit').value;
+    const tokenOut = document.getElementById('tokenOutLimit').value;
+    const amount = document.getElementById('amountInLimit').value;
+    const targetPrice = document.getElementById('targetPrice').value;
+    
+    if (!amount || !targetPrice) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (tokenIn === tokenOut) {
+        alert('Please select different tokens');
+        return;
+    }
+    
+    try {
+        const amountWei = ethers.utils.parseEther(amount);
+        const targetPriceWei = ethers.utils.parseEther(targetPrice);
+        
+        document.getElementById('limitBtnText').textContent = 'Creating...⏳';
+        document.getElementById('createLimitBtn').disabled = true;
+        
+        if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+            console.log('Approving token...');
+            const tokenContract = new ethers.Contract(
+                tokenIn,
+                ['function approve(address spender, uint256 amount) external returns (bool)'],
+                signer
+            );
+            
+            const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+            document.getElementById('limitBtnText').textContent = 'Approving...⏳';
+            await approveTx.wait();
+            console.log('Token approved');
         }
+        
+        document.getElementById('limitBtnText').textContent = 'Creating Order...⏳';
+        
+        const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+            await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                value: amountWei,
+                gasLimit: 500000
+            }) :
+            await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                gasLimit: 500000
+            });
+        
+        console.log('Transaction sent:', tx.hash);
+        await tx.wait();
+        console.log('Limit order created!');
+        
+        alert('🎯 Limit order created successfully! It will execute automatically when the price reaches your target.');
+        
+        document.getElementById('amountInLimit').value = '';
+        document.getElementById('targetPrice').value = '';
+        
+        loadData();
+    } catch (e) {
+        console.error('Limit order error:', e);
+        alert('Failed to create limit order: ' + (e.reason || e.message));
+    } finally {
+        document.getElementById('limitBtnText').textContent = '🎯 Create Limit Order';
+        document.getElementById('createLimitBtn').disabled = false;
+    }
+}
     </script>
 </body>
 </html>

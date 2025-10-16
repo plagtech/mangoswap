@@ -322,7 +322,7 @@
             <p class="text-xs text-indigo-700 bg-indigo-100 p-2 rounded">💡 Order executes automatically when market reaches your target price</p>
         </div>
 
-        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
             <span id="limitBtnText">🔗 Connect Wallet</span>
         </button>
     </div>
@@ -404,6 +404,22 @@
         
         // Disable button initially
         document.getElementById('scheduleSwapBtn').disabled = true;
+        document.getElementById('createLimitBtn').disabled = true;
+
+        // Function to update all button states when wallet connects/disconnects
+        function updateButtonStates() {
+            if (isConnected) {
+                document.getElementById('scheduleSwapBtn').disabled = false;
+                document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
+                document.getElementById('createLimitBtn').disabled = false;
+                document.getElementById('limitBtnText').textContent = '🎯 Create Limit Order';
+            } else {
+                document.getElementById('scheduleSwapBtn').disabled = true;
+                document.getElementById('btnText').textContent = '🔗 Connect Wallet to Swap';
+                document.getElementById('createLimitBtn').disabled = true;
+                document.getElementById('limitBtnText').textContent = '🔗 Connect Wallet';
+            }
+        }
 
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {
@@ -441,7 +457,7 @@
         document.getElementById('scheduleTab').addEventListener('click', () => switchTab('schedule'));
         document.getElementById('swapsTab').addEventListener('click', () => switchTab('swaps'));
         document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
-document.getElementById('createLimitBtn').addEventListener('click', createLimitOrder);
+        document.getElementById('createLimitBtn').addEventListener('click', createLimitOrder);
         document.getElementById('scheduleSwapBtn').addEventListener('click', scheduleSwap);
         
         document.getElementById('amountIn').addEventListener('input', debounceQuote);
@@ -590,8 +606,9 @@ document.getElementById('createLimitBtn').addEventListener('click', createLimitO
                 document.getElementById('accountInfo').classList.remove('hidden');
                 document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
                 document.getElementById('balanceSection').style.display = 'block';
-                document.getElementById('scheduleSwapBtn').disabled = false;
-                document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
+                
+                // Update all button states
+                updateButtonStates();
                 
                 console.log('Checking if owner...');
                 const owner = await contract.owner();
@@ -634,55 +651,58 @@ document.getElementById('createLimitBtn').addEventListener('click', createLimitO
                 }));
                 
                 const limitIds = await contract.getUserLimitOrders(account);
-const limitOrders = await Promise.all(limitIds.map(async id => {
-    const lo = await contract.getLimitOrder(id);
-    return {
-        id: lo[0].toString(),
-        tokenIn: lo[2],
-        tokenOut: lo[3],
-        amountIn: ethers.utils.formatEther(lo[4]),
-        targetPrice: ethers.utils.formatEther(lo[5]),
-        status: ['Active', 'Executed', 'Cancelled', 'Failed'][lo[7]],
-        createdAt: new Date(lo[8].toNumber() * 1000),
-        type: 'limit'
-    };
-}));
+                const limitOrders = await Promise.all(limitIds.map(async id => {
+                    const lo = await contract.getLimitOrder(id);
+                    return {
+                        id: lo[0].toString(),
+                        tokenIn: lo[2],
+                        tokenOut: lo[3],
+                        amountIn: ethers.utils.formatEther(lo[4]),
+                        targetPrice: ethers.utils.formatEther(lo[5]),
+                        status: ['Active', 'Executed', 'Cancelled', 'Failed'][lo[7]],
+                        createdAt: new Date(lo[8].toNumber() * 1000),
+                        type: 'limit'
+                    };
+                }));
 
-const allOrders = [...swaps, ...limitOrders];
+                const allOrders = [...swaps, ...limitOrders];
 
-const scheduled = swaps.filter(s => s.status === 'Scheduled').length;
-const executed = swaps.filter(s => s.status === 'Executed').length;
-document.getElementById('scheduledCount').textContent = scheduled;
-document.getElementById('executedCount').textContent = executed;
-displaySwaps(allOrders);
+                const scheduled = swaps.filter(s => s.status === 'Scheduled').length;
+                const executed = swaps.filter(s => s.status === 'Executed').length;
+                document.getElementById('scheduledCount').textContent = scheduled;
+                document.getElementById('executedCount').textContent = executed;
+                displaySwaps(allOrders);
             } catch (e) {
                 console.error('Load data error:', e);
             }
         }
 
-        function displaySwaps(swaps) {
+        function displaySwaps(orders) {
             const list = document.getElementById('swapsList');
             if (orders.length === 0) {
-                list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No swaps scheduled yet!</p></div>';
+                list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No orders yet!</p></div>';
                 return;
             }
             list.innerHTML = orders.map(s => {
                 const tokenInName = TOKENS[s.tokenIn.toLowerCase()] || s.tokenIn.slice(0, 6) + '...';
-                const tokenOutName = TOKENS[s.tokenOut.toLowerCase()] || s.tokenOut.slice(0, 6) + '...';if (s.type === 'limit') {
-    return `
-    <div class="border-2 border-indigo-200 rounded-xl p-6 mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg">
-        <div class="flex justify-between items-start mb-4">
-            <span class="px-3 py-1 rounded-full text-sm font-semibold ${s.status === 'Active' ? 'bg-indigo-100 text-indigo-800' : s.status === 'Executed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">🎯 ${s.status} Limit</span>
-            <div class="text-right">
-                <div class="font-bold text-lg">${s.amountIn} ${tokenInName} → ${tokenOutName}</div>
-                <div class="text-sm text-indigo-700">Target: 1 ${tokenInName} = ${s.targetPrice} ${tokenOutName}</div>
-            </div>
-        </div>
-        <div class="text-xs text-gray-500 mb-3">Created: ${s.createdAt.toLocaleString()}</div>
-        ${s.status === 'Active' ? `<button onclick="cancelLimitOrder(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition">Cancel Order</button>` : ''}
-    </div>
-    `;
-}
+                const tokenOutName = TOKENS[s.tokenOut.toLowerCase()] || s.tokenOut.slice(0, 6) + '...';
+                
+                if (s.type === 'limit') {
+                    return `
+                    <div class="border-2 border-indigo-200 rounded-xl p-6 mb-4 bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="px-3 py-1 rounded-full text-sm font-semibold ${s.status === 'Active' ? 'bg-indigo-100 text-indigo-800' : s.status === 'Executed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">🎯 ${s.status} Limit</span>
+                            <div class="text-right">
+                                <div class="font-bold text-lg">${s.amountIn} ${tokenInName} → ${tokenOutName}</div>
+                                <div class="text-sm text-indigo-700">Target: 1 ${tokenInName} = ${s.targetPrice} ${tokenOutName}</div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-3">Created: ${s.createdAt.toLocaleString()}</div>
+                        ${s.status === 'Active' ? `<button onclick="cancelLimitOrder(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition">Cancel Order</button>` : ''}
+                    </div>
+                    `;
+                }
+                
                 return `
                 <div class="border-2 border-orange-200 rounded-xl p-6 mb-4 bg-white shadow-lg">
                     <div class="flex justify-between mb-4">
@@ -889,39 +909,52 @@ displaySwaps(allOrders);
             }
         }
 
+        async function cancelLimitOrder(id) {
+            try {
+                const tx = await contract.cancelLimitOrder(id);
+                await tx.wait();
+                alert('Limit order cancelled!');
+                loadData();
+            } catch (e) {
+                console.error('Cancel limit order error:', e);
+                alert('Failed: ' + e.message);
+            }
+        }
+
         function switchTab(tab) {
-    if (tab === 'schedule') {
-        document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('scheduleTab').classList.remove('text-gray-600');
-        document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('limitTab').classList.add('text-gray-600');
-        document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('swapsTab').classList.add('text-gray-600');
-        document.getElementById('scheduleContent').classList.remove('hidden');
-        document.getElementById('limitContent').classList.add('hidden');
-        document.getElementById('swapsContent').classList.add('hidden');
-    } else if (tab === 'limit') {
-        document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('limitTab').classList.remove('text-gray-600');
-        document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('scheduleTab').classList.add('text-gray-600');
-        document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('swapsTab').classList.add('text-gray-600');
-        document.getElementById('limitContent').classList.remove('hidden');
-        document.getElementById('scheduleContent').classList.add('hidden');
-        document.getElementById('swapsContent').classList.add('hidden');
-    } else {
-        document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('swapsTab').classList.remove('text-gray-600');
-        document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('scheduleTab').classList.add('text-gray-600');
-        document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-        document.getElementById('limitTab').classList.add('text-gray-600');
-        document.getElementById('swapsContent').classList.remove('hidden');
-        document.getElementById('scheduleContent').classList.add('hidden');
-        document.getElementById('limitContent').classList.add('hidden');
-    }
-}
+            if (tab === 'schedule') {
+                document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('scheduleTab').classList.remove('text-gray-600');
+                document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('limitTab').classList.add('text-gray-600');
+                document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('swapsTab').classList.add('text-gray-600');
+                document.getElementById('scheduleContent').classList.remove('hidden');
+                document.getElementById('limitContent').classList.add('hidden');
+                document.getElementById('swapsContent').classList.add('hidden');
+            } else if (tab === 'limit') {
+                document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('limitTab').classList.remove('text-gray-600');
+                document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('scheduleTab').classList.add('text-gray-600');
+                document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('swapsTab').classList.add('text-gray-600');
+                document.getElementById('limitContent').classList.remove('hidden');
+                document.getElementById('scheduleContent').classList.add('hidden');
+                document.getElementById('swapsContent').classList.add('hidden');
+            } else {
+                document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('swapsTab').classList.remove('text-gray-600');
+                document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('scheduleTab').classList.add('text-gray-600');
+                document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+                document.getElementById('limitTab').classList.add('text-gray-600');
+                document.getElementById('swapsContent').classList.remove('hidden');
+                document.getElementById('scheduleContent').classList.add('hidden');
+                document.getElementById('limitContent').classList.add('hidden');
+            }
+        }
+        
         document.getElementById('withdrawBtn')?.addEventListener('click', async () => {
             try {
                 const tx = await contract.withdrawFees();
@@ -1047,78 +1080,81 @@ displaySwaps(allOrders);
                 document.getElementById('estimatedAmount').textContent = '~';
                 document.getElementById('priceLoading').classList.add('hidden');
             }
-        }async function createLimitOrder() {
-    if (!isConnected) {
-        alert('Please connect your wallet first');
-        showWalletModal();
-        return;
-    }
-    
-    const tokenIn = document.getElementById('tokenInLimit').value;
-    const tokenOut = document.getElementById('tokenOutLimit').value;
-    const amount = document.getElementById('amountInLimit').value;
-    const targetPrice = document.getElementById('targetPrice').value;
-    
-    if (!amount || !targetPrice) {
-        alert('Please fill in all fields');
-        return;
-    }
-    
-    if (tokenIn === tokenOut) {
-        alert('Please select different tokens');
-        return;
-    }
-    
-    try {
-        const amountWei = ethers.utils.parseEther(amount);
-        const targetPriceWei = ethers.utils.parseEther(targetPrice);
-        
-        document.getElementById('limitBtnText').textContent = 'Creating...⏳';
-        document.getElementById('createLimitBtn').disabled = true;
-        
-        if (tokenIn !== '0x0000000000000000000000000000000000000000') {
-            console.log('Approving token...');
-            const tokenContract = new ethers.Contract(
-                tokenIn,
-                ['function approve(address spender, uint256 amount) external returns (bool)'],
-                signer
-            );
-            
-            const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-            document.getElementById('limitBtnText').textContent = 'Approving...⏳';
-            await approveTx.wait();
-            console.log('Token approved');
         }
-        
-        document.getElementById('limitBtnText').textContent = 'Creating Order...⏳';
-        
-        const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-            await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
-                value: amountWei,
-                gasLimit: 500000
-            }) :
-            await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
-                gasLimit: 500000
-            });
-        
-        console.log('Transaction sent:', tx.hash);
-        await tx.wait();
-        console.log('Limit order created!');
-        
-        alert('🎯 Limit order created successfully! It will execute automatically when the price reaches your target.');
-        
-        document.getElementById('amountInLimit').value = '';
-        document.getElementById('targetPrice').value = '';
-        
-        loadData();
-    } catch (e) {
-        console.error('Limit order error:', e);
-        alert('Failed to create limit order: ' + (e.reason || e.message));
-    } finally {
-        document.getElementById('limitBtnText').textContent = '🎯 Create Limit Order';
-        document.getElementById('createLimitBtn').disabled = false;
-    }
-}
+
+        async function createLimitOrder() {
+            if (!isConnected) {
+                alert('Please connect your wallet first');
+                showWalletModal();
+                return;
+            }
+            
+            const tokenIn = document.getElementById('tokenInLimit').value;
+            const tokenOut = document.getElementById('tokenOutLimit').value;
+            const amount = document.getElementById('amountInLimit').value;
+            const targetPrice = document.getElementById('targetPrice').value;
+            
+            if (!amount || !targetPrice) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            if (tokenIn === tokenOut) {
+                alert('Please select different tokens');
+                return;
+            }
+            
+            try {
+                const amountWei = ethers.utils.parseEther(amount);
+                const targetPriceWei = ethers.utils.parseEther(targetPrice);
+                
+                document.getElementById('limitBtnText').textContent = 'Creating...⏳';
+                document.getElementById('createLimitBtn').disabled = true;
+                
+                if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                    console.log('Approving token...');
+                    const tokenContract = new ethers.Contract(
+                        tokenIn,
+                        ['function approve(address spender, uint256 amount) external returns (bool)'],
+                        signer
+                    );
+                    
+                    const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+                    document.getElementById('limitBtnText').textContent = 'Approving...⏳';
+                    await approveTx.wait();
+                    console.log('Token approved');
+                }
+                
+                document.getElementById('limitBtnText').textContent = 'Creating Order...⏳';
+                
+                const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                        value: amountWei,
+                        gasLimit: 500000
+                    }) :
+                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                        gasLimit: 500000
+                    });
+                
+                console.log('Transaction sent:', tx.hash);
+                await tx.wait();
+                console.log('Limit order created!');
+                
+                alert('🎯 Limit order created successfully! It will execute automatically when the price reaches your target.');
+                
+                document.getElementById('amountInLimit').value = '';
+                document.getElementById('targetPrice').value = '';
+                
+                loadData();
+            } catch (e) {
+                console.error('Limit order error:', e);
+                alert('Failed to create limit order: ' + (e.reason || e.message));
+            } finally {
+                document.getElementById('limitBtnText').textContent = '🎯 Create Limit Order';
+                document.getElementById('createLimitBtn').disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
+

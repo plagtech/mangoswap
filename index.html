@@ -421,6 +421,18 @@
             }
         }
 
+        // Function to update target price labels
+        function updateTargetPriceLabels() {
+            const tokenInLimit = document.getElementById('tokenInLimit').value;
+            const tokenOutLimit = document.getElementById('tokenOutLimit').value;
+            
+            const tokenInName = TOKENS[tokenInLimit.toLowerCase()] || 'Token';
+            const tokenOutName = TOKENS[tokenOutLimit.toLowerCase()] || 'Token';
+            
+            document.getElementById('targetTokenIn').textContent = tokenInName;
+            document.getElementById('targetTokenOut').textContent = tokenOutName;
+        }
+
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {
             document.getElementById('settingsModal').classList.remove('hidden');
@@ -459,6 +471,10 @@
         document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
         document.getElementById('createLimitBtn').addEventListener('click', createLimitOrder);
         document.getElementById('scheduleSwapBtn').addEventListener('click', scheduleSwap);
+        
+        // Update target price labels when limit order tokens change
+        document.getElementById('tokenInLimit').addEventListener('change', updateTargetPriceLabels);
+        document.getElementById('tokenOutLimit').addEventListener('change', updateTargetPriceLabels);
         
         document.getElementById('amountIn').addEventListener('input', debounceQuote);
         document.getElementById('tokenIn').addEventListener('change', () => {

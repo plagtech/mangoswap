@@ -434,6 +434,23 @@
 
         const TOKENS = {'0x0000000000000000000000000000000000000000':'ETH','0x4200000000000000000000000000000000000006':'WETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf':'cbBTC','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x58d97b57bb95320f9a05dc918aef65434969c2b2':'MORPHO'};
 
+        // CoinGecko token ID mapping for accurate market prices
+        const COINGECKO_IDS = {
+            '0x0000000000000000000000000000000000000000': 'ethereum',
+            '0x4200000000000000000000000000000000000006': 'ethereum',
+            '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913': 'usd-coin',
+            '0x50c5725949a6f0c72e6c4a641f24049a917db0cb': 'dai',
+            '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf': 'bitcoin',
+            '0x532f27101965dd16442e59d40670faf5ebb142e4': 'based-brett',
+            '0x940181a94a35a4569e4529a3cdfb74e38fd98631': 'aerodrome-finance',
+            '0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4': 'toshi-base',
+            '0x4ed4e862860bed51a9570b96d89af5e1b0efefed': 'degen-base',
+            '0xa88594d404727625a9437c3f886c7643872296ae': 'moonwell',
+            '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'virtual-protocol',
+            '0x78a087d713be963bf307b18f2ff8122ef9a63ae9': 'zora',
+            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'morpho'
+        };
+
         const WETH = '0x4200000000000000000000000000000000000006';
         let provider, signer, contract, account, isOwner = false;
         let quoteTimeout;
@@ -1191,20 +1208,56 @@
             document.getElementById('marketPriceValue').textContent = 'Loading...';
             
             try {
-                // Get current price from contract
-                const amount = ethers.utils.parseEther('1');
-                const price = await contract.getCurrentPrice(tokenIn, tokenOut, amount);
-                const priceFormatted = parseFloat(ethers.utils.formatEther(price));
+                // Get CoinGecko IDs for both tokens
+                const coinGeckoIdIn = COINGECKO_IDS[tokenIn.toLowerCase()];
+                const coinGeckoIdOut = COINGECKO_IDS[tokenOut.toLowerCase()];
                 
-                if (priceFormatted > 0) {
-                    currentMarketPriceValue = priceFormatted;
-                    document.getElementById('marketPriceValue').textContent = priceFormatted.toFixed(6);
+                if (!coinGeckoIdIn || !coinGeckoIdOut) {
+                    document.getElementById('marketPriceValue').textContent = 'N/A';
+                    return;
+                }
+                
+                // Fetch prices from CoinGecko (free API, no key needed)
+                const response = await fetch(
+                    `https://api.coingecko.com/api/v3/simple/price?ids=${coinGeckoIdIn},${coinGeckoIdOut}&vs_currencies=usd`
+                );
+                
+                if (!response.ok) {
+                    throw new Error('CoinGecko API error');
+                }
+                
+                const data = await response.json();
+                
+                const priceIn = data[coinGeckoIdIn]?.usd;
+                const priceOut = data[coinGeckoIdOut]?.usd;
+                
+                if (priceIn && priceOut && priceOut > 0) {
+                    // Calculate how many tokenOut you get for 1 tokenIn
+                    currentMarketPriceValue = priceIn / priceOut;
+                    document.getElementById('marketPriceValue').textContent = currentMarketPriceValue.toFixed(6);
                 } else {
+                    currentMarketPriceValue = 0;
                     document.getElementById('marketPriceValue').textContent = 'N/A';
                 }
             } catch (error) {
                 console.error('Failed to get market price:', error);
                 document.getElementById('marketPriceValue').textContent = 'Error';
+                
+                // Fallback to contract method if CoinGecko fails
+                try {
+                    if (contract) {
+                        const amount = ethers.utils.parseEther('1');
+                        const price = await contract.getCurrentPrice(tokenIn, tokenOut, amount);
+                        const priceFormatted = parseFloat(ethers.utils.formatEther(price));
+                        
+                        if (priceFormatted > 0) {
+                            currentMarketPriceValue = priceFormatted;
+                            document.getElementById('marketPriceValue').textContent = priceFormatted.toFixed(6);
+                        }
+                    }
+                } catch (fallbackError) {
+                    console.error('Fallback price fetch failed:', fallbackError);
+                }
             }
         }
 
@@ -1382,5 +1435,6 @@
     </script>
 </body>
 </html>
+
 
 

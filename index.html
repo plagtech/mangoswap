@@ -454,7 +454,7 @@
             '0x940181a94a35a4569e4529a3cdfb74e38fd98631': 'aerodrome-finance',
             '0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4': 'toshi-base',
             '0x4ed4e862860bed51a9570b96d89af5e1b0efefed': 'degen-base',
-            '0xa88594d404727625a9437c3f886c7643872296ae': 'moonwell',
+            '0xa88594d404727625a9437c3f886c7643872296ae': 'well',
             '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'virtual-protocol',
             '0x78a087d713be963bf307b18f2ff8122ef9a63ae9': 'zora',
             '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'morpho'
@@ -1290,9 +1290,56 @@
                 }
             } catch (error) {
                 console.error('Failed to get market price:', error);
+                
+                // Fallback 1: Try DexScreener API (better for Base tokens)
+                try {
+                    const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenIn}`);
+                    const dexData = await dexResponse.json();
+                    
+                    if (dexData?.pairs && dexData.pairs.length > 0) {
+                        const pair = dexData.pairs.find(p => 
+                            p.chainId === 'base' && 
+                            (p.quoteToken.address.toLowerCase() === tokenOut.toLowerCase() ||
+                             p.baseToken.address.toLowerCase() === tokenOut.toLowerCase())
+                        );
+                        
+                        if (pair) {
+                            const priceIn = parseFloat(pair.priceUsd);
+                            
+                            // Get tokenOut price
+                            const dexResponse2 = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenOut}`);
+                            const dexData2 = await dexResponse2.json();
+                            
+                            if (dexData2?.pairs && dexData2.pairs.length > 0) {
+                                const pair2 = dexData2.pairs.find(p => p.chainId === 'base');
+                                const priceOut = pair2 ? parseFloat(pair2.priceUsd) : 1;
+                                
+                                if (priceIn > 0 && priceOut > 0) {
+                                    currentMarketPriceValue = priceIn / priceOut;
+                                    
+                                    let displayPrice;
+                                    if (currentMarketPriceValue >= 1) {
+                                        displayPrice = currentMarketPriceValue.toFixed(6);
+                                    } else if (currentMarketPriceValue >= 0.000001) {
+                                        displayPrice = currentMarketPriceValue.toFixed(8);
+                                    } else {
+                                        displayPrice = currentMarketPriceValue.toExponential(4);
+                                    }
+                                    
+                                    document.getElementById('marketPriceValue').textContent = displayPrice;
+                                    document.getElementById('marketPriceUSD').textContent = `$${priceIn.toFixed(priceIn < 0.01 ? 6 : 2)} / $${priceOut.toFixed(priceOut < 0.01 ? 6 : 2)}`;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                } catch (dexError) {
+                    console.error('DexScreener fallback failed:', dexError);
+                }
+                
+                // Fallback 2: Try contract method
                 document.getElementById('marketPriceValue').textContent = 'Error';
                 
-                // Fallback to contract method if CoinGecko fails
                 try {
                     if (contract) {
                         const amount = ethers.utils.parseEther('1');

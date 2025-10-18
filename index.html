@@ -249,14 +249,14 @@
                     <div id="swapsList"></div>
                 </div>
                 <!-- LIMIT ORDER TAB -->
-<div id="limitContent" class="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 transition-colors duration-300 hidden">
+<div id="limitContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50 transition-colors duration-300 hidden">
     <div class="max-w-md mx-auto space-y-3">
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3 mb-3">
+        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-xl p-3 mb-3">
             <div class="flex items-center gap-2">
                 <span class="text-2xl">🎯</span>
                 <div>
-                    <h3 class="font-bold text-indigo-900 text-sm">Limit Order</h3>
-                    <p class="text-xs text-indigo-700">Set your target price, execute automatically</p>
+                    <h3 class="font-bold text-orange-900 text-sm">Limit Order</h3>
+                    <p class="text-xs text-orange-700">Set your target price, execute automatically</p>
                 </div>
             </div>
         </div>
@@ -284,7 +284,7 @@
         </div>
 
         <div class="flex justify-center -my-1 relative z-10">
-            <button id="swapArrowLimit" class="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
+            <button id="swapArrowLimit" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                 </svg>
@@ -310,19 +310,19 @@
             </select>
         </div>
 
-        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-xl p-3">
-            <h3 class="font-bold text-indigo-800 mb-2 text-sm">🎯 Target Price</h3>
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-3">
+            <h3 class="font-bold text-orange-800 mb-2 text-sm">🎯 Target Price</h3>
             <div class="flex items-center gap-1 sm:gap-2 mb-2 flex-wrap sm:flex-nowrap">
-                <span class="text-xs font-semibold text-indigo-700 whitespace-nowrap">When 1</span>
-                <span id="targetTokenIn" class="text-xs font-bold text-indigo-900 whitespace-nowrap">ETH</span>
-                <span class="text-xs font-semibold text-indigo-700">=</span>
-                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 min-w-0 px-2 sm:px-3 py-2 border-2 border-indigo-200 rounded-lg font-bold text-center text-sm sm:text-base">
-                <span id="targetTokenOut" class="text-xs font-bold text-indigo-900 whitespace-nowrap">USDC</span>
+                <span class="text-xs font-semibold text-orange-700 whitespace-nowrap">When 1</span>
+                <span id="targetTokenIn" class="text-xs font-bold text-orange-900 whitespace-nowrap">ETH</span>
+                <span class="text-xs font-semibold text-orange-700">=</span>
+                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 min-w-0 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
+                <span id="targetTokenOut" class="text-xs font-bold text-orange-900 whitespace-nowrap">USDC</span>
             </div>
-            <p class="text-xs text-indigo-700 bg-indigo-100 p-2 rounded">💡 Order executes automatically when market reaches your target price</p>
+            <p class="text-xs text-orange-700 bg-yellow-100 p-2 rounded">💡 Order executes automatically when market reaches your target price</p>
         </div>
 
-        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
+        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
             <span id="limitBtnText">🔗 Connect Wallet</span>
         </button>
     </div>
@@ -338,8 +338,8 @@
                         <span class="text-2xl">🔒</span>
                         <div>
                             <div class="text-xs font-semibold text-green-800">Smart Contract</div>
-                            <a href="https://basescan.org/address/0x15ab98be32ede727dc804ef8ad5c983b8658f63b" target="_blank" rel="noopener noreferrer" class="font-mono text-xs text-green-700 hover:text-green-900 hover:underline">
-                                0x15ab...f63b
+                            <a href="https://basescan.org/address/0x33b9AFAD31861DE0b83F651eFe92E0461c807011" target="_blank" rel="noopener noreferrer" class="font-mono text-xs text-green-700 hover:text-green-900 hover:underline">
+                                0x33b9...7011
                             </a>
                         </div>
                     </div>
@@ -363,7 +363,7 @@
     </div>
 
     <script>
-        const CONTRACT_ADDRESS = '0x15ab98be32ede727dc804ef8ad5c983b8658f63b';
+        const CONTRACT_ADDRESS = '0x33b9AFAD31861DE0b83F651eFe92E0461c807011'; // MangoSwap V2 - Secure
         const BASE_CHAIN_ID = '0x2105';
         const ABI = [
     "function instantSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external payable returns (uint256)",
@@ -1205,5 +1205,4 @@
     </script>
 </body>
 </html>
-
 

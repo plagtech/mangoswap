@@ -310,6 +310,23 @@
             </select>
         </div>
 
+        <!-- Current Market Price Display -->
+        <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-3">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-blue-800">📊 Current Market Price</span>
+                <button id="refreshPriceBtn" class="text-blue-600 hover:text-blue-800 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+            </div>
+            <div id="currentMarketPrice" class="text-center">
+                <div class="text-xs text-blue-600 mb-1">1 <span id="marketTokenIn">ETH</span> =</div>
+                <div class="text-2xl font-bold text-blue-900" id="marketPriceValue">Loading...</div>
+                <div class="text-xs text-blue-600"><span id="marketTokenOut">USDC</span></div>
+            </div>
+        </div>
+
         <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-3">
             <h3 class="font-bold text-orange-800 mb-2 text-sm">🎯 Target Price</h3>
             <div class="flex items-center gap-1 sm:gap-2 mb-2 flex-wrap sm:flex-nowrap">
@@ -319,7 +336,36 @@
                 <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 min-w-0 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
                 <span id="targetTokenOut" class="text-xs font-bold text-orange-900 whitespace-nowrap">USDC</span>
             </div>
-            <p class="text-xs text-orange-700 bg-yellow-100 p-2 rounded">💡 Order executes automatically when market reaches your target price</p>
+            
+            <!-- Your Order Rate Display -->
+            <div id="orderRateInfo" class="bg-white border-2 border-orange-200 rounded-lg p-2 mb-2 hidden">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-gray-700">Your Order Rate:</span>
+                    <span class="text-xs font-bold text-orange-900" id="orderRateValue">-</span>
+                </div>
+                <div id="priceDifference" class="text-xs text-center mt-1 font-semibold">-</div>
+            </div>
+            
+            <p class="text-xs text-orange-700 bg-yellow-100 p-2 rounded mb-2">💡 Order executes automatically when market reaches your target price</p>
+            
+            <!-- Expiration Options -->
+            <div class="mt-3">
+                <label class="text-xs font-bold text-orange-800 mb-2 block">⏰ Order Expiration</label>
+                <select id="expirationSelect" class="w-full bg-white border-2 border-yellow-200 rounded-lg px-3 py-2 text-sm font-semibold">
+                    <option value="0">Never (Good til Cancelled)</option>
+                    <option value="600">10 Minutes</option>
+                    <option value="3600">1 Hour</option>
+                    <option value="86400">1 Day</option>
+                    <option value="259200">3 Days</option>
+                    <option value="604800">7 Days</option>
+                    <option value="custom">Custom...</option>
+                </select>
+                <div id="customExpirationInput" class="mt-2 hidden">
+                    <label class="text-xs text-orange-700 block mb-1">Custom Expiration (hours):</label>
+                    <input type="number" id="customExpirationHours" min="1" max="720" placeholder="Hours" class="w-full px-3 py-2 border-2 border-yellow-200 rounded-lg text-sm">
+                </div>
+                <div id="expirationPreview" class="text-xs text-orange-600 mt-1 hidden"></div>
+            </div>
         </div>
 
         <button id="createLimitBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
@@ -1130,6 +1176,135 @@
             }
         }
 
+        // Market Price and Limit Order Features
+        let currentMarketPriceValue = 0;
+
+        async function updateMarketPrice() {
+            const tokenIn = document.getElementById('tokenInLimit').value;
+            const tokenOut = document.getElementById('tokenOutLimit').value;
+            
+            const tokenInName = TOKENS[tokenIn.toLowerCase()] || 'Token';
+            const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'Token';
+            
+            document.getElementById('marketTokenIn').textContent = tokenInName;
+            document.getElementById('marketTokenOut').textContent = tokenOutName;
+            document.getElementById('marketPriceValue').textContent = 'Loading...';
+            
+            try {
+                // Get current price from contract
+                const amount = ethers.utils.parseEther('1');
+                const price = await contract.getCurrentPrice(tokenIn, tokenOut, amount);
+                const priceFormatted = parseFloat(ethers.utils.formatEther(price));
+                
+                if (priceFormatted > 0) {
+                    currentMarketPriceValue = priceFormatted;
+                    document.getElementById('marketPriceValue').textContent = priceFormatted.toFixed(6);
+                } else {
+                    document.getElementById('marketPriceValue').textContent = 'N/A';
+                }
+            } catch (error) {
+                console.error('Failed to get market price:', error);
+                document.getElementById('marketPriceValue').textContent = 'Error';
+            }
+        }
+
+        function updateOrderRateInfo() {
+            const targetPrice = parseFloat(document.getElementById('targetPrice').value);
+            const tokenInName = TOKENS[document.getElementById('tokenInLimit').value.toLowerCase()] || 'Token';
+            const tokenOutName = TOKENS[document.getElementById('tokenOutLimit').value.toLowerCase()] || 'Token';
+            
+            if (targetPrice > 0 && currentMarketPriceValue > 0) {
+                document.getElementById('orderRateInfo').classList.remove('hidden');
+                document.getElementById('orderRateValue').textContent = `1 ${tokenInName} = ${targetPrice.toFixed(6)} ${tokenOutName}`;
+                
+                // Calculate difference
+                const difference = ((targetPrice - currentMarketPriceValue) / currentMarketPriceValue) * 100;
+                const diffElement = document.getElementById('priceDifference');
+                
+                if (Math.abs(difference) < 0.1) {
+                    diffElement.textContent = '≈ At Market Price';
+                    diffElement.className = 'text-xs text-center mt-1 font-semibold text-gray-600';
+                } else if (difference > 0) {
+                    diffElement.textContent = `${difference.toFixed(2)}% above market 📈`;
+                    diffElement.className = 'text-xs text-center mt-1 font-semibold text-green-600';
+                } else {
+                    diffElement.textContent = `${Math.abs(difference).toFixed(2)}% below market 📉`;
+                    diffElement.className = 'text-xs text-center mt-1 font-semibold text-red-600';
+                }
+            } else {
+                document.getElementById('orderRateInfo').classList.add('hidden');
+            }
+        }
+
+        function updateExpirationPreview() {
+            const select = document.getElementById('expirationSelect');
+            const customInput = document.getElementById('customExpirationInput');
+            const preview = document.getElementById('expirationPreview');
+            
+            if (select.value === 'custom') {
+                customInput.classList.remove('hidden');
+                preview.classList.add('hidden');
+            } else {
+                customInput.classList.add('hidden');
+                
+                if (select.value === '0') {
+                    preview.classList.add('hidden');
+                } else {
+                    const seconds = parseInt(select.value);
+                    const expiryDate = new Date(Date.now() + seconds * 1000);
+                    preview.textContent = `Expires: ${expiryDate.toLocaleString()}`;
+                    preview.classList.remove('hidden');
+                }
+            }
+        }
+
+        function getExpirationTime() {
+            const select = document.getElementById('expirationSelect');
+            
+            if (select.value === 'custom') {
+                const hours = parseInt(document.getElementById('customExpirationHours').value) || 0;
+                if (hours > 0) {
+                    return Math.floor(Date.now() / 1000) + (hours * 3600);
+                }
+                return 0;
+            } else if (select.value === '0') {
+                return 0; // Never expires
+            } else {
+                return Math.floor(Date.now() / 1000) + parseInt(select.value);
+            }
+        }
+
+        // Event listeners for limit order features
+        document.getElementById('tokenInLimit').addEventListener('change', () => {
+            updateTargetPriceLabels();
+            updateMarketPrice();
+        });
+        
+        document.getElementById('tokenOutLimit').addEventListener('change', () => {
+            updateTargetPriceLabels();
+            updateMarketPrice();
+        });
+        
+        document.getElementById('targetPrice').addEventListener('input', updateOrderRateInfo);
+        
+        document.getElementById('refreshPriceBtn').addEventListener('click', updateMarketPrice);
+        
+        document.getElementById('expirationSelect').addEventListener('change', updateExpirationPreview);
+        
+        document.getElementById('customExpirationHours').addEventListener('input', () => {
+            const hours = parseInt(document.getElementById('customExpirationHours').value);
+            if (hours > 0) {
+                const expiryDate = new Date(Date.now() + hours * 3600000);
+                document.getElementById('expirationPreview').textContent = `Expires: ${expiryDate.toLocaleString()}`;
+                document.getElementById('expirationPreview').classList.remove('hidden');
+            }
+        });
+
+        // Update market price when limit tab is opened
+        document.getElementById('limitTab').addEventListener('click', () => {
+            setTimeout(updateMarketPrice, 500);
+        });
+
         async function createLimitOrder() {
             if (!isConnected) {
                 alert('Please connect your wallet first');
@@ -1175,12 +1350,14 @@
                 
                 document.getElementById('limitBtnText').textContent = 'Creating Order...⏳';
                 
+                const expiryTime = getExpirationTime();
+                
                 const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, expiryTime, {
                         value: amountWei,
                         gasLimit: 500000
                     }) :
-                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, 0, {
+                    await contract.createLimitOrder(tokenIn, tokenOut, amountWei, targetPriceWei, expiryTime, {
                         gasLimit: 500000
                     });
                 
@@ -1205,4 +1382,5 @@
     </script>
 </body>
 </html>
+
 

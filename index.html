@@ -339,11 +339,11 @@
             <div class="flex items-center gap-1 sm:gap-2 mb-2 flex-wrap sm:flex-nowrap">
                 <span class="text-xs font-semibold text-orange-700 whitespace-nowrap">When 1</span>
                 <span id="targetTokenIn" class="text-xs font-bold text-orange-900 whitespace-nowrap">ETH</span>
-                <span id="targetTokenInFull" class="text-xs text-orange-500"></span>
+                <span id="targetTokenInFull" class="text-xs text-orange-500 whitespace-nowrap"></span>
                 <span class="text-xs font-semibold text-orange-700">=</span>
-                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 min-w-0 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
+                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="w-24 sm:w-32 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
                 <span id="targetTokenOut" class="text-xs font-bold text-orange-900 whitespace-nowrap">USDC</span>
-                <span id="targetTokenOutFull" class="text-xs text-orange-500"></span>
+                <span id="targetTokenOutFull" class="text-xs text-orange-500 whitespace-nowrap"></span>
             </div>
             
             <!-- Your Order Rate Display -->
@@ -623,6 +623,17 @@
             tokenInSelect.value = tokenOutSelect.value;
             tokenOutSelect.value = tempValue;
             getQuote();
+        });
+        
+        // Swap arrow for limit order page
+        document.getElementById('swapArrowLimit').addEventListener('click', function() {
+            const tokenInSelect = document.getElementById('tokenInLimit');
+            const tokenOutSelect = document.getElementById('tokenOutLimit');
+            const tempValue = tokenInSelect.value;
+            tokenInSelect.value = tokenOutSelect.value;
+            tokenOutSelect.value = tempValue;
+            updateTargetPriceLabels();
+            updateMarketPrice();
         });
         
         document.getElementById('tokenIn').addEventListener('change', function() {
@@ -1530,5 +1541,3 @@
     </script>
 </body>
 </html>
-
-

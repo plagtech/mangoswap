@@ -321,9 +321,16 @@
                 </button>
             </div>
             <div id="currentMarketPrice" class="text-center">
-                <div class="text-xs text-blue-600 mb-1">1 <span id="marketTokenIn">ETH</span> =</div>
+                <div class="text-xs text-blue-600 mb-1">
+                    1 <span id="marketTokenIn">ETH</span> 
+                    <span class="text-blue-400" id="marketTokenInFull">(Ethereum)</span> =
+                </div>
                 <div class="text-2xl font-bold text-blue-900" id="marketPriceValue">Loading...</div>
-                <div class="text-xs text-blue-600"><span id="marketTokenOut">USDC</span></div>
+                <div class="text-xs text-blue-600 mb-1">
+                    <span id="marketTokenOut">USDC</span>
+                    <span class="text-blue-400" id="marketTokenOutFull">(USD Coin)</span>
+                </div>
+                <div class="text-xs text-blue-500 mt-1" id="marketPriceUSD"></div>
             </div>
         </div>
 
@@ -332,9 +339,11 @@
             <div class="flex items-center gap-1 sm:gap-2 mb-2 flex-wrap sm:flex-nowrap">
                 <span class="text-xs font-semibold text-orange-700 whitespace-nowrap">When 1</span>
                 <span id="targetTokenIn" class="text-xs font-bold text-orange-900 whitespace-nowrap">ETH</span>
+                <span id="targetTokenInFull" class="text-xs text-orange-500"></span>
                 <span class="text-xs font-semibold text-orange-700">=</span>
                 <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="flex-1 min-w-0 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
                 <span id="targetTokenOut" class="text-xs font-bold text-orange-900 whitespace-nowrap">USDC</span>
+                <span id="targetTokenOutFull" class="text-xs text-orange-500"></span>
             </div>
             
             <!-- Your Order Rate Display -->
@@ -451,6 +460,23 @@
             '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'morpho'
         };
 
+        // Full token names for clarity
+        const TOKEN_NAMES = {
+            '0x0000000000000000000000000000000000000000': 'Ethereum',
+            '0x4200000000000000000000000000000000000006': 'Wrapped Ether',
+            '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913': 'USD Coin',
+            '0x50c5725949a6f0c72e6c4a641f24049a917db0cb': 'Dai Stablecoin',
+            '0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf': 'Coinbase Wrapped BTC',
+            '0x532f27101965dd16442e59d40670faf5ebb142e4': 'Brett',
+            '0x940181a94a35a4569e4529a3cdfb74e38fd98631': 'Aerodrome Finance',
+            '0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4': 'Toshi',
+            '0x4ed4e862860bed51a9570b96d89af5e1b0efefed': 'Degen',
+            '0xa88594d404727625a9437c3f886c7643872296ae': 'Moonwell',
+            '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'Virtual Protocol',
+            '0x78a087d713be963bf307b18f2ff8122ef9a63ae9': 'Zora',
+            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'Morpho'
+        };
+
         const WETH = '0x4200000000000000000000000000000000000006';
         let provider, signer, contract, account, isOwner = false;
         let quoteTimeout;
@@ -522,9 +548,13 @@
             
             const tokenInName = TOKENS[tokenInLimit.toLowerCase()] || 'Token';
             const tokenOutName = TOKENS[tokenOutLimit.toLowerCase()] || 'Token';
+            const tokenInFullName = TOKEN_NAMES[tokenInLimit.toLowerCase()] || '';
+            const tokenOutFullName = TOKEN_NAMES[tokenOutLimit.toLowerCase()] || '';
             
             document.getElementById('targetTokenIn').textContent = tokenInName;
             document.getElementById('targetTokenOut').textContent = tokenOutName;
+            document.getElementById('targetTokenInFull').textContent = tokenInFullName ? `(${tokenInFullName})` : '';
+            document.getElementById('targetTokenOutFull').textContent = tokenOutFullName ? `(${tokenOutFullName})` : '';
         }
 
         // Edit slippage button
@@ -1202,10 +1232,15 @@
             
             const tokenInName = TOKENS[tokenIn.toLowerCase()] || 'Token';
             const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'Token';
+            const tokenInFullName = TOKEN_NAMES[tokenIn.toLowerCase()] || '';
+            const tokenOutFullName = TOKEN_NAMES[tokenOut.toLowerCase()] || '';
             
             document.getElementById('marketTokenIn').textContent = tokenInName;
             document.getElementById('marketTokenOut').textContent = tokenOutName;
+            document.getElementById('marketTokenInFull').textContent = tokenInFullName ? `(${tokenInFullName})` : '';
+            document.getElementById('marketTokenOutFull').textContent = tokenOutFullName ? `(${tokenOutFullName})` : '';
             document.getElementById('marketPriceValue').textContent = 'Loading...';
+            document.getElementById('marketPriceUSD').textContent = '';
             
             try {
                 // Get CoinGecko IDs for both tokens
@@ -1234,7 +1269,21 @@
                 if (priceIn && priceOut && priceOut > 0) {
                     // Calculate how many tokenOut you get for 1 tokenIn
                     currentMarketPriceValue = priceIn / priceOut;
-                    document.getElementById('marketPriceValue').textContent = currentMarketPriceValue.toFixed(6);
+                    
+                    // Format based on size for better readability
+                    let displayPrice;
+                    if (currentMarketPriceValue >= 1) {
+                        displayPrice = currentMarketPriceValue.toFixed(6);
+                    } else if (currentMarketPriceValue >= 0.000001) {
+                        displayPrice = currentMarketPriceValue.toFixed(8);
+                    } else {
+                        displayPrice = currentMarketPriceValue.toExponential(4);
+                    }
+                    
+                    document.getElementById('marketPriceValue').textContent = displayPrice;
+                    
+                    // Also show USD values for context
+                    document.getElementById('marketPriceUSD').textContent = `$${priceIn.toFixed(2)} / $${priceOut.toFixed(6)}`;
                 } else {
                     currentMarketPriceValue = 0;
                     document.getElementById('marketPriceValue').textContent = 'N/A';
@@ -1435,6 +1484,5 @@
     </script>
 </body>
 </html>
-
 
 

@@ -1266,14 +1266,32 @@
                 let priceIn = stablecoins[tokenIn.toLowerCase()];
                 let priceOut = stablecoins[tokenOut.toLowerCase()];
                 
+                console.log('Token In:', tokenIn, 'Price:', priceIn);
+                console.log('Token Out:', tokenOut, 'Price:', priceOut);
+                
+                // If both are stablecoins, we're done
+                if (priceIn && priceOut) {
+                    currentMarketPriceValue = priceIn / priceOut;
+                    document.getElementById('marketPriceValue').textContent = currentMarketPriceValue.toFixed(6);
+                    document.getElementById('marketPriceUSD').textContent = `$${priceIn.toFixed(2)} / $${priceOut.toFixed(2)}`;
+                    return;
+                }
+                
                 // Fetch prices from CoinGecko for non-stablecoins
-                if (!priceIn || !priceOut) {
+                const tokensToFetch = [];
+                if (!priceIn) tokensToFetch.push(tokenIn);
+                if (!priceOut) tokensToFetch.push(tokenOut);
+                
+                if (tokensToFetch.length > 0) {
                     const response = await fetch(
-                        `https://api.coingecko.com/api/v3/simple/token_price/base?contract_addresses=${tokenIn},${tokenOut}&vs_currencies=usd`
+                        `https://api.coingecko.com/api/v3/simple/token_price/base?contract_addresses=${tokensToFetch.join(',')}&vs_currencies=usd`
                     );
+                    
+                    console.log('CoinGecko response status:', response.status);
                     
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('CoinGecko data:', data);
                         
                         if (!priceIn) {
                             priceIn = data[tokenIn.toLowerCase()]?.usd;
@@ -1281,8 +1299,12 @@
                         if (!priceOut) {
                             priceOut = data[tokenOut.toLowerCase()]?.usd;
                         }
+                    } else {
+                        console.error('CoinGecko API error:', response.status);
                     }
                 }
+                
+                console.log('Final prices - In:', priceIn, 'Out:', priceOut);
                 
                 if (priceIn && priceOut && priceOut > 0) {
                     // Calculate how many tokenOut you get for 1 tokenIn
@@ -1303,6 +1325,7 @@
                     // Also show USD values for context
                     document.getElementById('marketPriceUSD').textContent = `$${priceIn.toFixed(priceIn < 0.01 ? 6 : 2)} / $${priceOut.toFixed(priceOut < 0.01 ? 6 : 2)}`;
                 } else {
+                    console.error('Missing price data - In:', priceIn, 'Out:', priceOut);
                     throw new Error('Invalid price data');
                 }
             } catch (error) {
@@ -1548,6 +1571,5 @@
     </script>
 </body>
 </html>
-
 
 

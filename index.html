@@ -109,6 +109,8 @@
                                     <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                                     <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
                                     <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                                    <option value="0x22af33fe49fd1fa80c7149773dde5890d3c76f3b">BANKR</option>
+                                    <option value="0xb1a03eda10342529bbf8eb700a06c60441fef25d">MIGGLES</option>
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
@@ -148,6 +150,8 @@
                                     <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                                     <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
                                     <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                                    <option value="0x22af33fe49fd1fa80c7149773dde5890d3c76f3b">BANKR</option>
+                                    <option value="0xb1a03eda10342529bbf8eb700a06c60441fef25d">MIGGLES</option>
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
@@ -282,6 +286,8 @@
                     <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                     <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
                     <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                    <option value="0x22af33fe49fd1fa80c7149773dde5890d3c76f3b">BANKR</option>
+                    <option value="0xb1a03eda10342529bbf8eb700a06c60441fef25d">MIGGLES</option>
                 </select>
             </div>
         </div>
@@ -310,6 +316,8 @@
                 <option value="0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b">VIRTUAL</option>
                 <option value="0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9">ZORA</option>
                 <option value="0x58D97B57BB95320F9a05dC918Aef65434969c2B2">MORPHO</option>
+                <option value="0x22af33fe49fd1fa80c7149773dde5890d3c76f3b">BANKR</option>
+                <option value="0xb1a03eda10342529bbf8eb700a06c60441fef25d">MIGGLES</option>
             </select>
         </div>
 
@@ -444,7 +452,7 @@
     "function platformFee() external view returns (uint256)"
 ];
 
-        const TOKENS = {'0x0000000000000000000000000000000000000000':'ETH','0x4200000000000000000000000000000000000006':'WETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf':'cbBTC','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x58d97b57bb95320f9a05dc918aef65434969c2b2':'MORPHO'};
+        const TOKENS = {'0x0000000000000000000000000000000000000000':'ETH','0x4200000000000000000000000000000000000006':'WETH','0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':'USDC','0x50c5725949a6f0c72e6c4a641f24049a917db0cb':'DAI','0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf':'cbBTC','0x532f27101965dd16442e59d40670faf5ebb142e4':'BRETT','0x940181a94a35a4569e4529a3cdfb74e38fd98631':'AERO','0xac1bd2486aaf3b5c0fc3fd868558b082a531b2b4':'TOSHI','0x4ed4e862860bed51a9570b96d89af5e1b0efefed':'DEGEN','0xa88594d404727625a9437c3f886c7643872296ae':'WELL','0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b':'VIRTUAL','0x78a087d713be963bf307b18f2ff8122ef9a63ae9':'ZORA','0x58d97b57bb95320f9a05dc918aef65434969c2b2':'MORPHO','0x22af33fe49fd1fa80c7149773dde5890d3c76f3b':'BANKR','0xb1a03eda10342529bbf8eb700a06c60441fef25d':'MIGGLES'};
 
         // CoinGecko token ID mapping for accurate market prices
         const COINGECKO_IDS = {
@@ -460,7 +468,9 @@
             '0xa88594d404727625a9437c3f886c7643872296ae': 'well',
             '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'virtual-protocol',
             '0x78a087d713be963bf307b18f2ff8122ef9a63ae9': 'zora',
-            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'morpho'
+            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'morpho',
+            '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b': 'bankr',
+            '0xb1a03eda10342529bbf8eb700a06c60441fef25d': 'miggles'
         };
 
         // Full token names for clarity
@@ -477,7 +487,9 @@
             '0xa88594d404727625a9437c3f886c7643872296ae': 'Moonwell',
             '0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b': 'Virtual Protocol',
             '0x78a087d713be963bf307b18f2ff8122ef9a63ae9': 'Zora',
-            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'Morpho'
+            '0x58d97b57bb95320f9a05dc918aef65434969c2b2': 'Morpho',
+            '0x22af33fe49fd1fa80c7149773dde5890d3c76f3b': 'Bankr',
+            '0xb1a03eda10342529bbf8eb700a06c60441fef25d': 'Miggles'
         };
 
         const WETH = '0x4200000000000000000000000000000000000006';

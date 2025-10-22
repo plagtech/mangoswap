@@ -1,7 +1,11 @@
 {
-{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
   "baseBuilder": {
-    "ownerAddress": ["0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"]
+    "allowedAddress": ["0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"]
   },
   "miniapp": {
     "version": "1",

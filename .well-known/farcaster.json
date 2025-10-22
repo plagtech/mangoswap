@@ -22,5 +22,8 @@
     "homeUrl": "https://mangoswap.xyz",
     "primaryCategory": "defi",
     "tags": ["defi", "swap", "dex", "trading", "automation", "limit-orders", "base"]
+  },
+  "baseBuilder": {
+    "ownerAddress": "0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"
   }
 }

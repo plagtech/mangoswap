@@ -4,26 +4,25 @@
     "payload": "",
     "signature": ""
   },
+  "baseBuilder": {
+    "allowedAddresses": ["0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"]
+  },
   "miniapp": {
     "version": "1",
     "name": "MangoSwap",
-    "subtitle": "Automated Trading on Base",
-    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders. Features include time-based execution, price-triggered orders, and multi-DEX routing with enhanced security.",
+    "homeUrl": "https://mangoswap.xyz",
     "iconUrl": "https://mangoswap.xyz/icon.png",
     "splashImageUrl": "https://mangoswap.xyz/splash.png",
     "splashBackgroundColor": "#f18435",
-    "imageUrl": "https://mangoswap.xyz/preview.png",
+    "subtitle": "Automated Trading on Base",
+    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders. Features include time-based execution, price-triggered orders, and multi-DEX routing with enhanced security.",
     "screenshotUrls": [
       "https://mangoswap.xyz/screenshots/limit-order.png",
       "https://mangoswap.xyz/screenshots/limit-order-details.png",
       "https://mangoswap.xyz/screenshots/instant-swap.png",
       "https://mangoswap.xyz/screenshots/swap-rates.png"
     ],
-    "homeUrl": "https://mangoswap.xyz",
-    "primaryCategory": "defi",
-    "tags": ["defi", "swap", "dex", "trading", "automation", "limit-orders", "base"]
-  },
-  "baseBuilder": {
-    "ownerAddress": "0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"
+    "primaryCategory": "finance",
+    "tags": ["defi", "swap", "dex", "trading", "automation"]
   }
 }

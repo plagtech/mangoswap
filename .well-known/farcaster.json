@@ -15,7 +15,7 @@
     "splashImageUrl": "https://mangoswap.xyz/splash.png",
     "splashBackgroundColor": "#f18435",
     "subtitle": "Automated Trading on Base",
-    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders. Features include time-based execution, price-triggered orders, and multi-DEX routing with enhanced security.",
+    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders.",
     "screenshotUrls": [
       "https://mangoswap.xyz/screenshots/limit-order.png",
       "https://mangoswap.xyz/screenshots/limit-order-details.png",

@@ -1,11 +1,11 @@
 {
   "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
+    "header": "eyJmaWQiOjEzNDY4NTcsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgxODljRDRkRjc3ODkxNjFiOWNFMzFjYmZmMmM1MTNiNjU2NzYyMTMyIn0",
+    "payload": "eyJkb21haW4iOiJtYW5nb3N3YXAueHl6In0",
+    "signature": "i03z5oPHC/jn0WjV8J27WmQMHTc8DBm3XEYn5p3B0TkzNdjQFp797RNHZnqFgRxyB9IheCoEdAvOJJravONqVBs="
   },
   "baseBuilder": {
-    "allowedAddress": ["0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"]
+    "allowedAddresses": ["0x4843C3C5b4eABeb7fA8a687e194C398A06c3DcF3"]
   },
   "miniapp": {
     "version": "1",
@@ -15,7 +15,7 @@
     "splashImageUrl": "https://mangoswap.xyz/splash.png",
     "splashBackgroundColor": "#f18435",
     "subtitle": "Automated Trading on Base",
-    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders.",
+    "description": "A secure automated trading platform on Base that enables instant swaps, scheduled swaps, and limit orders. Features include time-based execution, price-triggered orders, and multi-DEX routing with enhanced security.",
     "screenshotUrls": [
       "https://mangoswap.xyz/screenshots/limit-order.png",
       "https://mangoswap.xyz/screenshots/limit-order-details.png",

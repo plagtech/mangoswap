@@ -23,6 +23,11 @@
       "https://mangoswap.xyz/screenshots/swap-rates.png"
     ],
     "primaryCategory": "finance",
-    "tags": ["defi", "swap", "dex", "trading", "automation"]
+    "tags": ["defi", "swap", "dex", "trading", "automation"],
+    "ogTitle": "MangoSwap",
+    "ogDescription": "Automated trading on Base with limit orders and scheduled swaps",
+    "ogImageUrl": "https://mangoswap.xyz/og-image.png",
+    "heroImageUrl": "https://mangoswap.xyz/og-image.png",
+    "tagline": "Trade Smarter on Base"
   }
 }

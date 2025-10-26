@@ -66,10 +66,14 @@
         body.dark-mode .border-orange-300, body.dark-mode .border-orange-200 { border-color: rgba(255, 140, 66, 0.3) !important; }
         body.dark-mode .bg-gradient-to-br { background: rgba(255, 140, 66, 0.1) !important; }
         body.dark-mode #mainContent .bg-white { background-color: rgba(255, 140, 66, 0.12) !important; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: rgba(255, 255, 255, 0.1) !important; color: white !important; border-color: rgba(255, 140, 66, 0.3) !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: rgba(255, 255, 255, 0.1) !important; color: #AA4D00 !important; border-color: rgba(255, 140, 66, 0.3) !important; }
+        body.dark-mode select option { color: #AA4D00 !important; background-color: #1a1a2e !important; }
         body.dark-mode input::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
         body.dark-mode .bg-orange-100, body.dark-mode .bg-yellow-100 { background-color: rgba(255, 140, 66, 0.2) !important; }
-        body.dark-mode .text-orange-700, body.dark-mode .text-orange-900 { color: rgba(255, 200, 100, 0.9) !important; }
+        body.dark-mode .text-orange-700, body.dark-mode .text-orange-900 { color: #AA4D00 !important; }
+        body.dark-mode button span, body.dark-mode button { color: white !important; }
+        body.dark-mode #swapBtn span, body.dark-mode #scheduleLaterBtn span, body.dark-mode #createLimitBtn span { color: #AA4D00 !important; font-weight: bold; }
+        body.dark-mode label { color: #AA4D00 !important; }
         body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
     </style>
@@ -1886,4 +1890,3 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-

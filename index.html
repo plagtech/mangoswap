@@ -58,6 +58,20 @@
             .onboarding-screen h1 { font-size: 24px; }
             .onboarding-logo img { width: 56px; height: 56px; }
         }
+        
+        /* Dark Mode Styles */
+        body.dark-mode { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important; }
+        body.dark-mode .bg-white { background-color: rgba(255, 140, 66, 0.15) !important; backdrop-filter: blur(10px); }
+        body.dark-mode .text-gray-600, body.dark-mode .text-gray-700, body.dark-mode .text-gray-800 { color: rgba(255, 255, 255, 0.9) !important; }
+        body.dark-mode .border-orange-300, body.dark-mode .border-orange-200 { border-color: rgba(255, 140, 66, 0.3) !important; }
+        body.dark-mode .bg-gradient-to-br { background: rgba(255, 140, 66, 0.1) !important; }
+        body.dark-mode #mainContent .bg-white { background-color: rgba(255, 140, 66, 0.12) !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: rgba(255, 255, 255, 0.1) !important; color: white !important; border-color: rgba(255, 140, 66, 0.3) !important; }
+        body.dark-mode input::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+        body.dark-mode .bg-orange-100, body.dark-mode .bg-yellow-100 { background-color: rgba(255, 140, 66, 0.2) !important; }
+        body.dark-mode .text-orange-700, body.dark-mode .text-orange-900 { color: rgba(255, 200, 100, 0.9) !important; }
+        body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
+        body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
     </style>
 <body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen transition-colors duration-300">
 
@@ -210,6 +224,9 @@
                 </div>
             </div>
         </div>
+                    <button id="themeToggle" class="bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
+                        <span id="themeIcon">🌙</span>
+                    </button>
     </div>
     <!-- End Onboarding Modal -->
 
@@ -1842,6 +1859,31 @@ window.addEventListener('DOMContentLoaded', function() {
     if (localStorage.getItem('mangoswapOnboardingComplete') === 'true') {
         document.getElementById('onboardingModal').classList.add('hidden');
     }
+    
+    // Dark Mode Toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    
+    // Check for saved theme preference or default to light mode
+    const currentTheme = localStorage.getItem('mangoswapTheme') || 'light';
+    if (currentTheme === 'dark') {
+        body.classList.add('dark-mode');
+        themeIcon.textContent = '☀️';
+    }
+    
+    // Toggle theme
+    themeToggle.addEventListener('click', function() {
+        body.classList.toggle('dark-mode');
+        
+        if (body.classList.contains('dark-mode')) {
+            themeIcon.textContent = '☀️';
+            localStorage.setItem('mangoswapTheme', 'dark');
+        } else {
+            themeIcon.textContent = '🌙';
+            localStorage.setItem('mangoswapTheme', 'light');
+        }
+    });
 });
 </script>
 

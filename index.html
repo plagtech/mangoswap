@@ -6,6 +6,7 @@
     <title>MangoSwap - Automate Your Trades</title>
     <link rel="icon" type="image/png" href="mango-logo.png">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/viem@2.21.0/dist/viem.umd.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="MangoSwap" />
@@ -241,7 +242,7 @@
                         <img src="mango-logo.png" alt="MangoSwap" class="w-10 h-10 inline-block"> 
                         <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span>
                     </h1>
-                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base 🌴</p>
+                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">GAS FREE</span></p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="themeToggle" class="bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
@@ -1116,6 +1117,98 @@
             }).join('');
         }
 
+
+        // NEW: Batched swap execution with paymaster (Base App compliant)
+        async function executeBatchedSwap(tokenIn, tokenOut, amountWei, minOutWei) {
+            try {
+                const calls = [];
+                const isNativeToken = tokenIn === '0x0000000000000000000000000000000000000000';
+
+                // Add approval call if ERC20
+                if (!isNativeToken) {
+                    const approvalData = viem.encodeFunctionData({
+                        abi: [{
+                            inputs: [
+                                { name: 'spender', type: 'address' },
+                                { name: 'amount', type: 'uint256' }
+                            ],
+                            name: 'approve',
+                            outputs: [{ name: '', type: 'bool' }],
+                            stateMutability: 'nonpayable',
+                            type: 'function'
+                        }],
+                        functionName: 'approve',
+                        args: [CONTRACT_ADDRESS, amountWei.toString()]
+                    });
+
+                    calls.push({
+                        to: tokenIn,
+                        data: approvalData,
+                        value: '0x0'
+                    });
+                }
+
+                // Add instant swap call
+                const swapData = viem.encodeFunctionData({
+                    abi: [{
+                        inputs: [
+                            { name: 'tokenIn', type: 'address' },
+                            { name: 'tokenOut', type: 'address' },
+                            { name: 'amountIn', type: 'uint256' },
+                            { name: 'minAmountOut', type: 'uint256' }
+                        ],
+                        name: 'instantSwap',
+                        outputs: [],
+                        stateMutability: 'payable',
+                        type: 'function'
+                    }],
+                    functionName: 'instantSwap',
+                    args: [tokenIn, tokenOut, amountWei.toString(), minOutWei.toString()]
+                });
+
+                calls.push({
+                    to: CONTRACT_ADDRESS,
+                    data: swapData,
+                    value: isNativeToken ? `0x${amountWei.toString(16)}` : '0x0'
+                });
+
+                // Check if wallet supports batching
+                const capabilities = await window.ethereum.request({
+                    method: 'wallet_getCapabilities',
+                    params: [userAddress]
+                }).catch(() => null);
+
+                const supportsBatching = capabilities?.['0x2105']?.['atomicBatch']?.supported || false;
+
+                if (supportsBatching) {
+                    // Use batched transaction with paymaster
+                    console.log('Using batched swap with paymaster...');
+                    const result = await window.ethereum.request({
+                        method: 'wallet_sendCalls',
+                        params: [{
+                            from: userAddress,
+                            calls: calls,
+                            capabilities: {
+                                paymasterService: {
+                                    url: PAYMASTER_URL
+                                }
+                            }
+                        }]
+                    });
+                    
+                    console.log('Batched transaction result:', result);
+                    return { hash: result, batched: true };
+                } else {
+                    // Fallback to regular transaction flow
+                    console.log('Wallet does not support batching, using fallback...');
+                    return null; // Signal to use original flow
+                }
+            } catch (error) {
+                console.error('Batched swap error:', error);
+                return null; // Fallback to original flow
+            }
+        }
+
         async function scheduleSwap() {
             if (!isConnected) {
                 alert('Please connect your wallet first');
@@ -1173,41 +1266,56 @@
                     console.log('Amount:', amount);
                     console.log('Min Out:', minOut);
                     
-                    if (tokenIn !== '0x0000000000000000000000000000000000000000') {
-                        console.log('Approving token...');
-                        const tokenContract = new ethers.Contract(
-                            tokenIn,
-                            ['function approve(address spender, uint256 amount) external returns (bool)'],
-                            signer
-                        );
-                        
-                        const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-                        document.getElementById('btnText').textContent = 'Approving... ⏳';
-                        document.getElementById('scheduleSwapBtn').disabled = true;
-                        await approveTx.wait();
-                        console.log('Token approved');
-                    }
-                    
                     document.getElementById('btnText').textContent = 'Swapping... ⏳';
                     document.getElementById('scheduleSwapBtn').disabled = true;
                     
-                    const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
-                            value: amountWei,
-                            gasLimit: 500000 
-                        }) :
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, {
-                            gasLimit: 500000
-                        });
+                    // Try batched swap first (Base App compliant)
+                    const batchedResult = await executeBatchedSwap(tokenIn, tokenOut, amountWei, minOutWei);
                     
-                    console.log('Transaction sent:', tx.hash);
-                    const receipt = await tx.wait();
-                    console.log('Transaction confirmed:', receipt);
-                    
-                    document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
-                    document.getElementById('scheduleSwapBtn').disabled = false;
-                    
-                    alert('✅ Swap executed successfully! Check your wallet for tokens.');
+                    if (batchedResult && batchedResult.batched) {
+                        // Batched swap succeeded
+                        console.log('Batched swap successful!');
+                        document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
+                        document.getElementById('scheduleSwapBtn').disabled = false;
+                        alert('✅ Swap executed successfully with ZERO gas fees! 🥭⛽');
+                    } else {
+                        // Fallback to original flow
+                        console.log('Using fallback swap method...');
+                        
+                        if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                            console.log('Approving token...');
+                            const tokenContract = new ethers.Contract(
+                                tokenIn,
+                                ['function approve(address spender, uint256 amount) external returns (bool)'],
+                                signer
+                            );
+                            
+                            const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+                            document.getElementById('btnText').textContent = 'Approving... ⏳';
+                            await approveTx.wait();
+                            console.log('Token approved');
+                        }
+                        
+                        document.getElementById('btnText').textContent = 'Swapping... ⏳';
+                        
+                        const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                            await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
+                                value: amountWei,
+                                gasLimit: 500000 
+                            }) :
+                            await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, {
+                                gasLimit: 500000
+                            });
+                        
+                        console.log('Transaction sent:', tx.hash);
+                        const receipt = await tx.wait();
+                        console.log('Transaction confirmed:', receipt);
+                        
+                        document.getElementById('btnText').textContent = '🥭 Schedule Swap 🌴';
+                        document.getElementById('scheduleSwapBtn').disabled = false;
+                        
+                        alert('✅ Swap executed successfully! Check your wallet for tokens.');
+                    }
                     
                 } else {
                     const date = document.getElementById('executionDate').value;

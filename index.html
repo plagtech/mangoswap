@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@Mngoswp" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
   
   <!-- Existing Farcaster Frame metadata -->
   <meta property="fc:frame" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
@@ -73,33 +73,12 @@
         body.dark-mode .bg-orange-100, body.dark-mode .bg-yellow-100 { background-color: rgba(255, 255, 255, 0.5) !important; }
         body.dark-mode .text-orange-700, body.dark-mode .text-orange-900 { color: #AA4D00 !important; }
         body.dark-mode label { color: #1a1a2e !important; font-weight: 600; }
-        
-        /* FIXED: Force modal containers to stay centered in dark mode */
-        body.dark-mode #settingsModal.fixed,
-        body.dark-mode #walletModal.fixed {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            z-index: 50 !important;
-        }
-        
-        /* FIXED: Dark mode modal content styling */
-        body.dark-mode #settingsModal > div, 
-        body.dark-mode #walletModal > div { 
-            background-color: rgba(255, 140, 66, 0.95) !important; 
-            backdrop-filter: blur(10px); 
-            border-color: rgba(255, 140, 66, 0.5) !important;
-            position: relative !important;
-            margin: 0 auto !important;
-        }
+        body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
         body.dark-mode .shadow-lg { box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3) !important; }
         body.dark-mode .shadow-md { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2) !important; }
+        body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
+        body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
     </style>
 <body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen transition-colors duration-300">
 

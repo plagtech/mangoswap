@@ -74,12 +74,18 @@
         body.dark-mode .text-orange-700, body.dark-mode .text-orange-900 { color: #AA4D00 !important; }
         body.dark-mode label { color: #1a1a2e !important; font-weight: 600; }
         
-        /* FIXED: Ensure modal containers stay centered in dark mode */
-        body.dark-mode #settingsModal,
-        body.dark-mode #walletModal {
+        /* FIXED: Force modal containers to stay centered in dark mode */
+        body.dark-mode #settingsModal.fixed,
+        body.dark-mode #walletModal.fixed {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
+            z-index: 50 !important;
         }
         
         /* FIXED: Dark mode modal content styling */
@@ -88,6 +94,8 @@
             background-color: rgba(255, 140, 66, 0.95) !important; 
             backdrop-filter: blur(10px); 
             border-color: rgba(255, 140, 66, 0.5) !important;
+            position: relative !important;
+            margin: 0 auto !important;
         }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
         body.dark-mode .shadow-lg { box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3) !important; }

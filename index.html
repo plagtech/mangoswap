@@ -76,8 +76,8 @@
         body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
         body.dark-mode .shadow-lg { box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3) !important; }
-        /* Fix wallet modal positioning in dark mode */
-        body.dark-mode #walletModal { display: flex !important; align-items: center !important; justify-content: center !important; }
+        /* Fix wallet modal positioning in dark mode - only when visible */
+        body.dark-mode #walletModal:not(.hidden) { display: flex !important; align-items: center !important; justify-content: center !important; }
         body.dark-mode .shadow-md { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2) !important; }
         body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }

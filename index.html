@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@Mngoswp" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
   
   <!-- Existing Farcaster Frame metadata -->
   <meta property="fc:frame" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
@@ -79,22 +79,6 @@
         body.dark-mode .shadow-md { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2) !important; }
         body.dark-mode #settingsModal > div, body.dark-mode #walletModal > div { background-color: rgba(255, 140, 66, 0.95) !important; backdrop-filter: blur(10px); border-color: rgba(255, 140, 66, 0.5) !important; }
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
-        /* CRITICAL FIX: Ensure wallet modal stays centered in dark mode */
-        body.dark-mode #walletModal {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            z-index: 50 !important;
-        }
-        body.dark-mode #walletModal.hidden {
-            display: none !important;
-        }
     </style>
 <body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen transition-colors duration-300">
 
@@ -673,7 +657,7 @@
     </div>
 
     <script>
-        const CONTRACT_ADDRESS = '0x33b9AFAD31861DE0b83F651eFe92E0461c807011'; // MangoSwap V2 - Secure
+        const CONTRACT_ADDRESS = '0x35391981c22268c76dea4ef1ff91739923999676'; // MangoSwap V2 - Secure
         const BASE_CHAIN_ID = '0x2105';
         const ABI = [
     "function instantSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external payable returns (uint256)",
@@ -683,7 +667,7 @@
     "function executeLimitOrder(uint256 orderId) external",
     "function cancelSwap(uint256 swapId) external",
     "function cancelLimitOrder(uint256 orderId) external",
-    "function getCurrentPrice(address tokenIn, address tokenOut, uint256 amountIn) external view returns (uint256)",
+    "function getPrice(address tokenIn, address tokenOut, uint256 amountIn) external view returns (uint256)",
     "function getSwap(uint256 swapId) external view returns (tuple(uint256 id, address user, address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut, uint256 executionTime, uint8 status, uint256 executedAt, uint256 amountOut, uint8 orderType))",
     "function getLimitOrder(uint256 orderId) external view returns (tuple(uint256 id, address user, address tokenIn, address tokenOut, uint256 amountIn, uint256 targetPrice, uint256 expiryTime, uint8 status, uint256 createdAt, uint256 executedAt, uint256 amountOut))",
     "function getUserSwaps(address user) external view returns (uint256[])",
@@ -1776,7 +1760,7 @@
                 try {
                     if (contract) {
                         const amount = ethers.utils.parseEther('1');
-                        const price = await contract.getCurrentPrice(tokenIn, tokenOut, amount);
+                        const price = await contract.getPrice(tokenIn, tokenOut, amount);
                         const priceFormatted = parseFloat(ethers.utils.formatEther(price));
                         
                         if (priceFormatted > 0) {

@@ -6,6 +6,7 @@
     <title>MangoSwap - Automate Your Trades</title>
     <link rel="icon" type="image/png" href="mango-logo.png">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/viem@2.21.0/dist/viem.umd.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="MangoSwap" />
@@ -496,6 +497,24 @@
                         <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
                             <span id="btnText">🔗 Connect Wallet to Swap</span>
                         </button>
+                        
+                        <!-- Approval Flow Indicator -->
+                        <div id="approvalIndicator" class="hidden mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-300 rounded-lg p-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <div id="step1" class="flex items-center gap-1">
+                                        <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs">1</div>
+                                        <span class="font-semibold text-blue-900 text-xs">Approve</span>
+                                    </div>
+                                    <div class="text-blue-400 text-xs">→</div>
+                                    <div id="step2" class="flex items-center gap-1 opacity-50">
+                                        <div class="w-6 h-6 rounded-full bg-gray-300 text-white flex items-center justify-center font-bold text-xs">2</div>
+                                        <span class="font-semibold text-gray-600 text-xs">Swap</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-blue-800">💡 First time? Approve token once.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -692,6 +711,9 @@
     <script>
         const CONTRACT_ADDRESS = '0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16'; // MangoSwap V4 - NEW CONTRACT
         const BASE_CHAIN_ID = '0x2105';
+        
+        // PAYMASTER CONFIGURATION - Update this with your paymaster service URL
+        const PAYMASTER_URL = 'https://api.developer.coinbase.com/rpc/v1/base/0XFTXVSOwf0H30PN84h07BmJgiJhNtRw';
         
         // Updated ABI for MangoSwap V4
         const ABI = [
@@ -1180,6 +1202,97 @@
             }).join('');
         }
 
+        // Batched swap execution with paymaster (Base App compliant for GAS FREE swaps)
+        async function executeBatchedSwap(tokenIn, tokenOut, amountWei, minOutWei) {
+            try {
+                const calls = [];
+                const isNativeToken = tokenIn === '0x0000000000000000000000000000000000000000';
+
+                // Add approval call if ERC20
+                if (!isNativeToken) {
+                    const approvalData = viem.encodeFunctionData({
+                        abi: [{
+                            inputs: [
+                                { name: 'spender', type: 'address' },
+                                { name: 'amount', type: 'uint256' }
+                            ],
+                            name: 'approve',
+                            outputs: [{ name: '', type: 'bool' }],
+                            stateMutability: 'nonpayable',
+                            type: 'function'
+                        }],
+                        functionName: 'approve',
+                        args: [CONTRACT_ADDRESS, amountWei.toString()]
+                    });
+
+                    calls.push({
+                        to: tokenIn,
+                        data: approvalData,
+                        value: '0x0'
+                    });
+                }
+
+                // Add instant swap call
+                const swapData = viem.encodeFunctionData({
+                    abi: [{
+                        inputs: [
+                            { name: 'tokenIn', type: 'address' },
+                            { name: 'tokenOut', type: 'address' },
+                            { name: 'amountIn', type: 'uint256' },
+                            { name: 'minAmountOut', type: 'uint256' }
+                        ],
+                        name: 'instantSwap',
+                        outputs: [{ name: '', type: 'uint256' }],
+                        stateMutability: 'payable',
+                        type: 'function'
+                    }],
+                    functionName: 'instantSwap',
+                    args: [tokenIn, tokenOut, amountWei.toString(), minOutWei.toString()]
+                });
+
+                calls.push({
+                    to: CONTRACT_ADDRESS,
+                    data: swapData,
+                    value: isNativeToken ? `0x${amountWei.toString(16)}` : '0x0'
+                });
+
+                // Check if wallet supports batching
+                const capabilities = await window.ethereum.request({
+                    method: 'wallet_getCapabilities',
+                    params: [account]
+                }).catch(() => null);
+
+                const supportsBatching = capabilities?.['0x2105']?.['atomicBatch']?.supported || false;
+
+                if (supportsBatching && PAYMASTER_URL !== 'YOUR_PAYMASTER_URL_HERE') {
+                    // Use batched transaction with paymaster
+                    console.log('Using batched swap with paymaster for GAS FREE transaction...');
+                    const result = await window.ethereum.request({
+                        method: 'wallet_sendCalls',
+                        params: [{
+                            from: account,
+                            calls: calls,
+                            capabilities: {
+                                paymasterService: {
+                                    url: PAYMASTER_URL
+                                }
+                            }
+                        }]
+                    });
+                    
+                    console.log('Batched transaction result:', result);
+                    return { hash: result, batched: true };
+                } else {
+                    // Fallback to regular transaction flow
+                    console.log('Wallet does not support batching or paymaster not configured, using fallback...');
+                    return null; // Signal to use original flow
+                }
+            } catch (error) {
+                console.error('Batched swap error:', error);
+                return null; // Fallback to original flow
+            }
+        }
+
         async function scheduleSwap() {
             if (!isConnected) {
                 alert('Please connect your wallet first');
@@ -1236,41 +1349,57 @@
                     document.getElementById('btnText').textContent = 'Swapping... ⏳';
                     document.getElementById('scheduleSwapBtn').disabled = true;
                     
-                    if (tokenIn !== '0x0000000000000000000000000000000000000000') {
-                        console.log('Approving token...');
-                        const tokenContract = new ethers.Contract(
-                            tokenIn,
-                            ['function approve(address spender, uint256 amount) external returns (bool)'],
-                            signer
-                        );
+                    // Try batched swap first (GAS FREE with paymaster)
+                    const batchedResult = await executeBatchedSwap(tokenIn, tokenOut, amountWei, minOutWei);
+                    
+                    if (batchedResult && batchedResult.batched) {
+                        // Batched swap succeeded with paymaster - GAS FREE!
+                        console.log('Batched swap successful with ZERO gas fees!');
+                        updateButtonStates();
                         
-                        const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-                        document.getElementById('btnText').textContent = 'Approving... ⏳';
-                        await approveTx.wait();
-                        console.log('Token approved');
+                        const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'tokens';
+                        const estimatedOut = document.getElementById('estimatedAmount').textContent;
+                        showSuccessModal(batchedResult.hash, estimatedOut, tokenOutName);
+                    } else {
+                        // Fallback to original flow (pays gas)
+                        console.log('Using fallback swap method (standard gas fees apply)...');
+                        
+                        if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                            console.log('Approving token...');
+                            const tokenContract = new ethers.Contract(
+                                tokenIn,
+                                ['function approve(address spender, uint256 amount) external returns (bool)'],
+                                signer
+                            );
+                            
+                            const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
+                            document.getElementById('btnText').textContent = 'Approving... ⏳';
+                            await approveTx.wait();
+                            console.log('Token approved');
+                        }
+                        
+                        document.getElementById('btnText').textContent = 'Swapping... ⏳';
+                        
+                        const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
+                            await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
+                                value: amountWei,
+                                gasLimit: 500000 
+                            }) :
+                            await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, {
+                                gasLimit: 500000
+                            });
+                        
+                        console.log('Transaction sent:', tx.hash);
+                        const receipt = await tx.wait();
+                        console.log('Transaction confirmed:', receipt);
+                        
+                        updateButtonStates();
+                        
+                        // Show success modal
+                        const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'tokens';
+                        const estimatedOut = document.getElementById('estimatedAmount').textContent;
+                        showSuccessModal(tx.hash, estimatedOut, tokenOutName);
                     }
-                    
-                    document.getElementById('btnText').textContent = 'Swapping... ⏳';
-                    
-                    const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
-                            value: amountWei,
-                            gasLimit: 500000 
-                        }) :
-                        await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, {
-                            gasLimit: 500000
-                        });
-                    
-                    console.log('Transaction sent:', tx.hash);
-                    const receipt = await tx.wait();
-                    console.log('Transaction confirmed:', receipt);
-                    
-                    updateButtonStates();
-                    
-                    // Show success modal instead of alert
-                    const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'tokens';
-                    const estimatedOut = document.getElementById('estimatedAmount').textContent;
-                    showSuccessModal(tx.hash, estimatedOut, tokenOutName);
                     
                 } else {
                     const date = document.getElementById('executionDate').value;
@@ -1521,6 +1650,12 @@
                 
                 const tokenName = TOKENS[tokenIn.toLowerCase()] || 'Token';
                 document.getElementById('balanceFrom').textContent = `${userBalanceFrom.toFixed(4)} ${tokenName}`;
+                
+                if (tokenIn !== '0x0000000000000000000000000000000000000000') {
+                    document.getElementById('approvalIndicator').classList.remove('hidden');
+                } else {
+                    document.getElementById('approvalIndicator').classList.add('hidden');
+                }
             } catch (e) {
                 console.error('Balance fetch error:', e);
                 document.getElementById('balanceFrom').textContent = '-';

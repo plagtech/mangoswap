@@ -20,7 +20,7 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@Mngoswp" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
   
   <!-- Existing Farcaster Frame metadata -->
   <meta property="fc:frame" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
@@ -281,8 +281,8 @@
                 </div>
                 
                 <!-- Slippage Settings Modal -->
-                <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-orange-300 transition-colors duration-300">
+                <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-orange-300 transition-colors duration-300" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">📊 Slippage Settings</h3>
                         <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
                             <label class="block text-sm font-bold text-orange-900 mb-3">Slippage Tolerance</label>
@@ -305,8 +305,8 @@
                 </div>
                 
                 <!-- Wallet Modal -->
-                <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 border-4 border-orange-300 transition-colors duration-300">
+                <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-sm w-full mx-4 border-4 border-orange-300 transition-colors duration-300" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
                         <h3 class="text-2xl font-bold text-gray-800 mb-4">Connect Wallet</h3>
                         <div class="space-y-3">
                             <button id="connectMetaMask" class="w-full bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
@@ -324,8 +324,8 @@
                 </div>
                 
                 <!-- Success Modal -->
-                <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-green-300 transition-colors duration-300 relative overflow-hidden">
+                <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-green-300 transition-colors duration-300 relative overflow-hidden" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
                         <!-- Confetti animation -->
                         <div class="absolute inset-0 pointer-events-none" id="confettiContainer"></div>
                         
@@ -819,11 +819,15 @@
 
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {
-            document.getElementById('settingsModal').classList.remove('hidden');
+            const modal = document.getElementById('settingsModal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
         });
 
         document.getElementById('closeSettings').addEventListener('click', () => {
-            document.getElementById('settingsModal').classList.add('hidden');
+            const modal = document.getElementById('settingsModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         });
 
         // Slippage buttons
@@ -939,16 +943,22 @@
         });
 
         function showWalletModal() {
-            document.getElementById('walletModal').classList.remove('hidden');
+            const modal = document.getElementById('walletModal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
         }
 
         function hideWalletModal() {
-            document.getElementById('walletModal').classList.add('hidden');
+            const modal = document.getElementById('walletModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
         
         function showSuccessModal(txHash, amountOut, tokenOutSymbol) {
             // Show modal
-            document.getElementById('successModal').classList.remove('hidden');
+            const modal = document.getElementById('successModal');
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
             
             // Set content
             document.getElementById('successAmount').textContent = `${parseFloat(amountOut).toFixed(6)} ${tokenOutSymbol}`;
@@ -959,7 +969,9 @@
         }
         
         function hideSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
+            const modal = document.getElementById('successModal');
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
         }
         
         function createConfetti() {
@@ -1933,3 +1945,4 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+

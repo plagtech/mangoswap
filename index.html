@@ -239,7 +239,7 @@
                         <img src="mango-logo.png" alt="MangoSwap" class="w-10 h-10 inline-block"> 
                         <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span>
                     </h1>
-                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">V4</span></p>
+                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">GAS FREE</span></p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="themeToggle" class="bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
@@ -281,7 +281,10 @@
                                 🦊 MetaMask
                             </button>
                             <button id="connectCoinbase" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
-                                🔵 Coinbase Wallet
+                                🔵 Base Wallet
+                            </button>
+                            <button id="connectPhantom" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                                👻 Phantom
                             </button>
                         </div>
                         <button id="closeModal" class="mt-4 w-full text-gray-600 hover:text-gray-800 font-semibold">Cancel</button>
@@ -413,7 +416,7 @@
                                 </div>
                             </div>
                             <p id="instantTimeNote" class="text-xs text-orange-800 mt-2">✨ Swap executes immediately</p>
-                            <p id="scheduledTimeNote" class="text-xs text-orange-800 mt-2 hidden">📅 Swap will execute automatically at scheduled time</p>
+                            <p id="scheduledTimeNote" class="text-xs text-orange-800 mt-2 hidden">📅 Swap will execute at the time you select (your local timezone)</p>
                         </div>
 
                         <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-3 border border-green-300 transition-colors duration-300">
@@ -612,7 +615,7 @@
                         <span class="text-xl">✅</span>
                         <div>
                             <div class="text-xs font-semibold text-green-800">Verified Contract</div>
-                            <div class="text-xs text-green-700">Uniswap V3 Routing</div>
+                            <div class="text-xs text-green-700">View on Basescan</div>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
@@ -765,6 +768,7 @@
         document.getElementById('closeModal').addEventListener('click', hideWalletModal);
         document.getElementById('connectMetaMask').addEventListener('click', () => connectWallet('metamask'));
         document.getElementById('connectCoinbase').addEventListener('click', () => connectWallet('coinbase'));
+        document.getElementById('connectPhantom').addEventListener('click', () => connectWallet('phantom'));
         document.getElementById('scheduleTab').addEventListener('click', () => switchTab('schedule'));
         document.getElementById('swapsTab').addEventListener('click', () => switchTab('swaps'));
         document.getElementById('limitTab').addEventListener('click', () => switchTab('limit'));
@@ -868,11 +872,18 @@
 
             let ethereum;
             
-            if (walletType === 'coinbase') {
+            if (walletType === 'phantom') {
+                if (window.phantom?.ethereum) {
+                    ethereum = window.phantom.ethereum;
+                } else {
+                    alert('Phantom wallet not installed! Visit phantom.app to install.');
+                    return;
+                }
+            } else if (walletType === 'coinbase') {
                 if (window.ethereum?.isCoinbaseWallet) {
                     ethereum = window.ethereum;
                 } else {
-                    alert('Coinbase Wallet not detected! Please install it from coinbase.com/wallet');
+                    alert('Base Wallet not detected! Please install it from wallet.coinbase.com');
                     return;
                 }
             } else {

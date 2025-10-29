@@ -76,6 +76,37 @@
         body.dark-mode #settingsModal h3, body.dark-mode #walletModal h3 { color: #1a1a2e !important; }
         body.dark-mode .shadow-lg { box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3) !important; }
         body.dark-mode .shadow-md { box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2) !important; }
+        
+        /* Success Modal Animation */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        #successModal > div {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            animation: confettiFall 3s linear forwards;
+        }
+        
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
     </style>
 <body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen transition-colors duration-300">
 
@@ -290,6 +321,34 @@
                         <button id="closeModal" class="mt-4 w-full text-gray-600 hover:text-gray-800 font-semibold">Cancel</button>
                     </div>
                 </div>
+                
+                <!-- Success Modal -->
+                <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-green-300 transition-colors duration-300 relative overflow-hidden">
+                        <!-- Confetti animation -->
+                        <div class="absolute inset-0 pointer-events-none" id="confettiContainer"></div>
+                        
+                        <div class="text-center relative z-10">
+                            <div class="text-6xl mb-4 animate-bounce">🎉</div>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Swap Successful!</h3>
+                            <p class="text-gray-600 mb-4" id="successMessage">Your swap has been completed</p>
+                            
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 mb-4 border-2 border-green-200">
+                                <div class="text-sm text-gray-600 mb-1">You received</div>
+                                <div class="text-2xl font-bold text-green-600" id="successAmount">-</div>
+                            </div>
+                            
+                            <a id="basescanLink" href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition mb-3">
+                                View on Basescan 🔍
+                            </a>
+                            
+                            <button id="closeSuccessModal" class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
+                                Done 🥭
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div id="accountInfo" class="hidden text-right">
                     <div class="text-xs text-gray-600">Connected</div>
                     <div id="accountAddress" class="font-mono text-xs bg-orange-100 px-2 py-1 rounded border border-orange-300"></div>
@@ -864,6 +923,45 @@
         function hideWalletModal() {
             document.getElementById('walletModal').classList.add('hidden');
         }
+        
+        function showSuccessModal(txHash, amountOut, tokenOutSymbol) {
+            // Show modal
+            document.getElementById('successModal').classList.remove('hidden');
+            
+            // Set content
+            document.getElementById('successAmount').textContent = `${parseFloat(amountOut).toFixed(6)} ${tokenOutSymbol}`;
+            document.getElementById('basescanLink').href = `https://basescan.org/tx/${txHash}`;
+            
+            // Create confetti
+            createConfetti();
+        }
+        
+        function hideSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+        
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            container.innerHTML = ''; // Clear previous confetti
+            
+            const colors = ['#ff6b35', '#f7931e', '#fdc830', '#37b34a', '#4facfe', '#a78bfa'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                container.appendChild(confetti);
+            }
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 3000);
+        }
+        
+        document.getElementById('closeSuccessModal').addEventListener('click', hideSuccessModal);
 
         async function connectWallet(walletType) {
             console.log('Attempting to connect:', walletType);
@@ -1169,7 +1267,10 @@
                     
                     updateButtonStates();
                     
-                    alert('✅ Swap executed successfully! Check your wallet for tokens.');
+                    // Show success modal instead of alert
+                    const tokenOutName = TOKENS[tokenOut.toLowerCase()] || 'tokens';
+                    const estimatedOut = document.getElementById('estimatedAmount').textContent;
+                    showSuccessModal(tx.hash, estimatedOut, tokenOutName);
                     
                 } else {
                     const date = document.getElementById('executionDate').value;
@@ -1307,6 +1408,8 @@
                 await tx.wait();
                 console.log('Limit order created!');
                 
+                // Show success modal for limit order
+                hideSuccessModal(); // Just use regular success message for limit orders
                 alert('🎯 Limit order created successfully! It will execute automatically when the price reaches your target.');
                 
                 document.getElementById('amountInLimit').value = '';

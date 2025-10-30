@@ -20,19 +20,127 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@Mngoswp" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
   
   <!-- Existing Farcaster Frame metadata -->
   <meta property="fc:frame" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
 </head>
     <style>
+        /* Base styles with smooth transitions */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Dark mode variables */
+        :root {
+            --bg-primary: #fef3c7;
+            --bg-secondary: #ffffff;
+            --bg-gradient-start: #fed7aa;
+            --bg-gradient-mid: #fef3c7;
+            --bg-gradient-end: #d9f99d;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border-color: #fdba74;
+            --card-bg: #ffffff;
+            --modal-bg: #ffffff;
+            --input-bg: #ffffff;
+        }
+        
+        body.dark-mode {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-gradient-start: #16213e;
+            --bg-gradient-mid: #1a1a2e;
+            --bg-gradient-end: #0f3460;
+            --text-primary: #e5e7eb;
+            --text-secondary: #d1d5db;
+            --border-color: #ff8c42;
+            --card-bg: #16213e;
+            --modal-bg: #16213e;
+            --input-bg: #0f3460;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        .card-bg {
+            background-color: var(--card-bg);
+        }
+        
+        .modal-bg {
+            background-color: var(--modal-bg);
+        }
+        
+        .input-bg {
+            background-color: var(--input-bg);
+        }
+        
+        .text-primary {
+            color: var(--text-primary);
+        }
+        
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+        
+        .border-custom {
+            border-color: var(--border-color);
+        }
+        
         /* Onboarding Modal Styles */
-        .onboarding-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 99999; animation: fadeIn 0.3s ease-in; }
+        .onboarding-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(8px); 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 99999; 
+            animation: fadeIn 0.3s ease-in; 
+        }
         .onboarding-overlay.hidden { display: none; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .onboarding-container { max-width: 340px; width: 85%; background: rgba(255, 140, 66, 0.95); backdrop-filter: blur(10px); border: 2px solid rgba(255, 107, 53, 0.3); border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3); }
-        .onboarding-close-btn { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: none; background: rgba(26, 26, 46, 0.15); border-radius: 50%; color: #1a1a2e; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; z-index: 10; }
-        .onboarding-close-btn:hover { background: rgba(26, 26, 46, 0.3); color: #1a1a2e; transform: rotate(90deg); }
+        .onboarding-container { 
+            max-width: 340px; 
+            width: 85%; 
+            background: rgba(255, 140, 66, 0.95); 
+            backdrop-filter: blur(10px); 
+            border: 2px solid rgba(255, 107, 53, 0.3); 
+            border-radius: 20px; 
+            padding: 20px; 
+            position: relative; 
+            box-shadow: 0 20px 60px rgba(255, 107, 53, 0.3); 
+        }
+        .onboarding-close-btn { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            width: 32px; 
+            height: 32px; 
+            border: none; 
+            background: rgba(26, 26, 46, 0.15); 
+            border-radius: 50%; 
+            color: #1a1a2e; 
+            font-size: 20px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.2s ease; 
+            z-index: 10; 
+        }
+        .onboarding-close-btn:hover { 
+            background: rgba(26, 26, 46, 0.3); 
+            color: #1a1a2e; 
+            transform: rotate(90deg); 
+        }
         .onboarding-logo { display: flex; justify-content: center; margin-bottom: 12px; }
         .onboarding-logo img { width: 64px; height: 64px; object-fit: contain; }
         .onboarding-screen { display: none; text-align: center; animation: slideIn 0.5s ease-in; color: #1a1a2e; }
@@ -42,7 +150,19 @@
         .onboarding-subtitle { font-size: 15px; color: rgba(26, 26, 46, 0.8); margin-bottom: 18px; line-height: 1.4; }
         .onboarding-feature { background: rgba(255, 255, 255, 0.5); border-radius: 12px; padding: 12px; margin-bottom: 10px; text-align: left; }
         .onboarding-feature-content { display: flex; align-items: flex-start; }
-        .onboarding-number { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); border-radius: 50%; font-weight: 700; font-size: 12px; margin-right: 10px; flex-shrink: 0; }
+        .onboarding-number { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            width: 24px; 
+            height: 24px; 
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%); 
+            border-radius: 50%; 
+            font-weight: 700; 
+            font-size: 12px; 
+            margin-right: 10px; 
+            flex-shrink: 0; 
+        }
         .onboarding-feature h3 { font-size: 15px; margin-bottom: 4px; font-weight: 600; color: #1a1a2e; }
         .onboarding-feature p { font-size: 13px; color: rgba(26, 26, 46, 0.75); line-height: 1.3; }
         .onboarding-dots { display: flex; justify-content: center; gap: 6px; margin: 16px 0 12px; }
@@ -60,21 +180,29 @@
             .onboarding-logo img { width: 56px; height: 56px; }
         }
         
-        /* Modal positioning fix */
-        #walletModal, #settingsModal, #successModal {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            z-index: 9999 !important;
+        /* Modal styles - simplified to avoid conflicts */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        #walletModal > div, #settingsModal > div, #successModal > div {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
+        .modal-overlay.hidden {
+            display: none;
+        }
+        
+        .modal-content {
+            background-color: var(--modal-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            width: 90%;
+            margin: 1rem;
+            border: 4px solid var(--border-color);
         }
         
         /* Success Modal Animation */
@@ -89,7 +217,7 @@
             }
         }
         
-        #successModal > div {
+        .success-modal-content {
             animation: slideUp 0.4s ease-out;
         }
         
@@ -107,8 +235,44 @@
                 opacity: 0;
             }
         }
+        
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid rgba(255, 140, 66, 0.3);
+            border-top: 3px solid #ff8c42;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Touch targets - minimum 44px */
+        button, .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+        }
+        
+        /* User avatar styles */
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
     </style>
-<body class="bg-gradient-to-br from-orange-100 via-yellow-50 to-green-100 min-h-screen">
+<body>
 
     <!-- Onboarding Modal -->
     <div class="onboarding-overlay" id="onboardingModal">
@@ -263,120 +427,126 @@
     <!-- End Onboarding Modal -->
 
     <div class="container mx-auto px-4 py-4 max-w-3xl">
-        <div class="bg-white rounded-xl shadow-lg p-4 mb-4 border-2 border-orange-300">
+        <div class="card-bg rounded-xl shadow-lg p-4 mb-4 border-2 border-custom">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div>
                     <h1 class="text-3xl font-bold flex items-center gap-1">
                         <img src="mango-logo.png" alt="MangoSwap" class="w-10 h-10 inline-block"> 
                         <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span>
                     </h1>
-                    <p class="text-gray-600 text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">GAS FREE</span></p>
+                    <p class="text-secondary text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">GAS FREE</span></p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button id="connectBtn" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-5 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105">Connect Wallet</button>
+                    <button id="themeToggle" class="touch-target bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <button id="connectBtn" class="touch-target bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white px-5 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105">Connect Wallet</button>
                 </div>
                 
                 <!-- Slippage Settings Modal -->
-                <div id="settingsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-orange-300" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">📊 Slippage Settings</h3>
-                        <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
-                            <label class="block text-sm font-bold text-orange-900 mb-3">Slippage Tolerance</label>
+                <div id="settingsModal" class="modal-overlay hidden">
+                    <div class="modal-content">
+                        <h3 class="text-2xl font-bold text-primary mb-4">📊 Slippage Settings</h3>
+                        <div class="mb-6 p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-custom">
+                            <label class="block text-sm font-bold text-primary mb-3">Slippage Tolerance</label>
                             <div class="grid grid-cols-4 gap-2 mb-3">
-                                <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition border-2 border-orange-200 hover:border-orange-400" data-value="0.5">0.5%</button>
-                                <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition border-2 border-orange-200 hover:border-orange-400" data-value="1">1%</button>
-                                <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition bg-orange-500 text-white border-2 border-orange-500" data-value="5">5%</button>
-                                <button class="slippage-btn py-2 px-3 rounded-lg font-semibold transition border-2 border-orange-200 hover:border-orange-400" data-value="10">10%</button>
+                                <button class="slippage-btn touch-target py-2 px-3 rounded-lg font-semibold transition border-2 border-custom hover:border-orange-400" data-value="0.5">0.5%</button>
+                                <button class="slippage-btn touch-target py-2 px-3 rounded-lg font-semibold transition border-2 border-custom hover:border-orange-400" data-value="1">1%</button>
+                                <button class="slippage-btn touch-target py-2 px-3 rounded-lg font-semibold transition bg-orange-500 text-white border-2 border-orange-500" data-value="5">5%</button>
+                                <button class="slippage-btn touch-target py-2 px-3 rounded-lg font-semibold transition border-2 border-custom hover:border-orange-400" data-value="10">10%</button>
                             </div>
                             <div class="flex items-center gap-2">
-                                <input type="number" id="customSlippage" placeholder="Custom" step="0.1" min="0" max="50" class="flex-1 px-3 py-2 border-2 border-orange-200 rounded-lg font-semibold text-center">
-                                <span class="font-bold text-orange-900">%</span>
+                                <input type="number" id="customSlippage" placeholder="Custom" step="0.1" min="0" max="50" class="flex-1 px-3 py-2 border-2 border-custom rounded-lg font-semibold text-center input-bg text-primary">
+                                <span class="font-bold text-primary">%</span>
                             </div>
                             <p class="text-xs text-orange-700 mt-2">⚠️ High slippage may result in unfavorable rates</p>
                         </div>
-                        <button id="closeSettings" class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
+                        <button id="closeSettings" class="touch-target w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
                             Save Settings
                         </button>
                     </div>
                 </div>
                 
                 <!-- Wallet Modal -->
-                <div id="walletModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-sm w-full mx-4 border-4 border-orange-300" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Connect Wallet</h3>
+                <div id="walletModal" class="modal-overlay hidden">
+                    <div class="modal-content max-w-sm">
+                        <h3 class="text-2xl font-bold text-primary mb-4">Connect Wallet</h3>
                         <div class="space-y-3">
-                            <button id="connectMetaMask" class="w-full bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                            <button id="connectMetaMask" class="touch-target w-full bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
                                 🦊 MetaMask
                             </button>
-                            <button id="connectCoinbase" class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                            <button id="connectCoinbase" class="touch-target w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
                                 🔵 Base Wallet
                             </button>
-                            <button id="connectPhantom" class="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                            <button id="connectPhantom" class="touch-target w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
                                 👻 Phantom
                             </button>
                         </div>
-                        <button id="closeModal" class="mt-4 w-full text-gray-600 hover:text-gray-800 font-semibold">Cancel</button>
+                        <button id="closeModal" class="touch-target mt-4 w-full text-secondary hover:text-primary font-semibold">Cancel</button>
                     </div>
                 </div>
                 
                 <!-- Success Modal -->
-                <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50" style="display: none; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 9999 !important;">
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl p-6 max-w-md w-full mx-4 border-4 border-green-300 relative overflow-hidden" style="position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important;">
+                <div id="successModal" class="modal-overlay hidden">
+                    <div class="modal-content max-w-md success-modal-content relative overflow-hidden">
                         <!-- Confetti animation -->
                         <div class="absolute inset-0 pointer-events-none" id="confettiContainer"></div>
                         
                         <div class="text-center relative z-10">
                             <div class="text-6xl mb-4 animate-bounce">🎉</div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Swap Successful!</h3>
-                            <p class="text-gray-600 mb-4" id="successMessage">Your swap has been completed</p>
+                            <h3 class="text-2xl font-bold text-primary mb-2">Swap Successful!</h3>
+                            <p class="text-secondary mb-4" id="successMessage">Your swap has been completed</p>
                             
                             <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 mb-4 border-2 border-green-200">
                                 <div class="text-sm text-gray-600 mb-1">You received</div>
                                 <div class="text-2xl font-bold text-green-600" id="successAmount">-</div>
                             </div>
                             
-                            <a id="basescanLink" href="#" target="_blank" rel="noopener noreferrer" class="block w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition mb-3">
+                            <a id="basescanLink" href="#" target="_blank" rel="noopener noreferrer" class="touch-target block w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition mb-3">
                                 View on Basescan 🔍
                             </a>
                             
-                            <button id="closeSuccessModal" class="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
+                            <button id="closeSuccessModal" class="touch-target w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
                                 Done 🥭
                             </button>
                         </div>
                     </div>
                 </div>
                 
-                <div id="accountInfo" class="hidden text-right">
-                    <div class="text-xs text-gray-600">Connected</div>
-                    <div id="accountAddress" class="font-mono text-xs bg-orange-100 px-2 py-1 rounded border border-orange-300"></div>
+                <div id="accountInfo" class="hidden flex items-center gap-2">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="text-right">
+                        <div class="text-xs text-secondary">Connected</div>
+                        <div id="accountUsername" class="font-semibold text-sm text-primary">User</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="mainContent">
-            <div class="bg-white rounded-xl shadow-xl overflow-hidden border-2 border-orange-300">
-                <div class="flex border-b-2 border-orange-200">
-    <button id="scheduleTab" class="flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs sm:text-sm">Swap</button>
-    <button id="limitTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-xs sm:text-sm">Limit Order</button>
-    <button id="swapsTab" class="flex-1 px-3 py-2 font-bold text-gray-600 hover:bg-orange-50 transition text-xs sm:text-sm">My Orders</button>
+            <div class="card-bg rounded-xl shadow-xl overflow-hidden border-2 border-custom">
+                <div class="flex border-b-2 border-custom">
+    <button id="scheduleTab" class="touch-target flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs sm:text-sm">Swap</button>
+    <button id="limitTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm">Limit Order</button>
+    <button id="swapsTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm">My Orders</button>
 </div>
 
                 <div id="scheduleContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50">
                     <div class="max-w-md mx-auto space-y-3">
-                        <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
+                        <div class="card-bg border-2 border-custom rounded-xl p-3 shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-xs font-bold text-orange-700">From</label>
                                 <div class="text-right" id="balanceSection" style="display:none;">
-                                    <div class="text-xs text-gray-600">Balance: <span id="balanceFrom" class="font-semibold">-</span></div>
-                                    <button id="maxBtn" class="text-xs bg-orange-200 hover:bg-orange-300 text-orange-800 font-bold px-2 py-0.5 rounded transition">MAX</button>
+                                    <div class="text-xs text-secondary">Balance: <span id="balanceFrom" class="font-semibold">-</span></div>
+                                    <button id="maxBtn" class="touch-target text-xs bg-orange-200 hover:bg-orange-300 text-orange-800 font-bold px-2 py-0.5 rounded transition">MAX</button>
                                 </div>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                 <div class="flex-1">
-                                    <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="w-full text-2xl font-bold bg-transparent border-none outline-none text-gray-800">
-                                    <div id="usdValueIn" class="text-xs text-gray-500 mt-1">$0.00</div>
+                                    <input type="number" step="0.001" id="amountIn" placeholder="0.0" class="w-full text-2xl font-bold bg-transparent border-none outline-none text-primary">
+                                    <div id="usdValueIn" class="text-xs text-secondary mt-1">$0.00</div>
                                 </div>
-                                <select id="tokenIn" class="bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold hover:border-orange-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[120px]">
+                                <select id="tokenIn" class="touch-target bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-custom rounded-lg px-3 py-2 font-bold hover:border-orange-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[120px]">
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x4200000000000000000000000000000000000006">WETH</option>
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
@@ -395,29 +565,31 @@
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
-                            <input type="text" id="customTokenIn" placeholder="Paste token address (0x...)" class="hidden w-full mt-2 px-2 py-1 border border-orange-200 rounded text-xs">
+                            <input type="text" id="customTokenIn" placeholder="Paste token address (0x...)" class="hidden w-full mt-2 px-2 py-1 border border-custom rounded text-xs input-bg text-primary">
                         </div>
 
                         <div class="flex justify-center -my-1 relative z-10">
-                            <button id="swapArrow" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
+                            <button id="swapArrow" class="touch-target bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                                 </svg>
                             </button>
                         </div>
 
-                        <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
+                        <div class="card-bg border-2 border-green-300 rounded-xl p-3 shadow-md">
                             <div class="flex justify-between items-center mb-2">
                                 <label class="text-xs font-bold text-green-700">To (estimated)</label>
-                                <div id="priceLoading" class="hidden text-xs text-orange-600 font-semibold">Fetching...</div>
+                                <div id="priceLoading" class="hidden text-xs text-orange-600 font-semibold flex items-center gap-2">
+                                    <span class="spinner"></span> Fetching...
+                                </div>
                             </div>
                             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                                 <div class="flex-1">
-                                    <div class="text-2xl font-bold text-gray-800" id="estimatedAmount">0.0</div>
-                                    <div id="usdValueOut" class="text-xs text-gray-500 mt-1">$0.00</div>
+                                    <div class="text-2xl font-bold text-primary" id="estimatedAmount">0.0</div>
+                                    <div id="usdValueOut" class="text-xs text-secondary mt-1">$0.00</div>
                                 </div>
                                 <input type="number" step="0.001" id="minAmountOut" placeholder="0.0" class="hidden">
-                                <select id="tokenOut" class="bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold hover:border-green-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[120px]">
+                                <select id="tokenOut" class="touch-target bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold hover:border-green-400 transition cursor-pointer w-full sm:w-auto sm:flex-shrink-0 sm:min-w-[120px]">
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x4200000000000000000000000000000000000006">WETH</option>
@@ -436,7 +608,7 @@
                                     <option value="custom">Custom...</option>
                                 </select>
                             </div>
-                            <input type="text" id="customTokenOut" placeholder="Paste token address (0x...)" class="hidden w-full mt-2 px-2 py-1 border border-green-200 rounded text-xs">
+                            <input type="text" id="customTokenOut" placeholder="Paste token address (0x...)" class="hidden w-full mt-2 px-2 py-1 border border-green-200 rounded text-xs input-bg text-primary">
                             <div id="priceInfo" class="mt-2 space-y-1 text-xs hidden bg-green-50 p-2 rounded border border-green-200">
                                 <div class="flex justify-between text-green-800">
                                     <span class="font-semibold">Rate:</span>
@@ -464,11 +636,11 @@
                             <div id="scheduledTimeInputs" class="grid grid-cols-2 gap-2 hidden">
                                 <div>
                                     <label class="block text-xs font-bold text-orange-700 mb-1">Date</label>
-                                    <input type="date" id="executionDate" class="w-full px-2 py-1 border-2 border-orange-200 rounded-lg text-sm font-semibold">
+                                    <input type="date" id="executionDate" class="touch-target w-full px-2 py-1 border-2 border-orange-200 rounded-lg text-sm font-semibold input-bg text-primary">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-orange-700 mb-1">Time</label>
-                                    <input type="time" id="executionTime" class="w-full px-2 py-1 border-2 border-orange-200 rounded-lg text-sm font-semibold">
+                                    <input type="time" id="executionTime" class="touch-target w-full px-2 py-1 border-2 border-orange-200 rounded-lg text-sm font-semibold input-bg text-primary">
                                 </div>
                             </div>
                             <p id="instantTimeNote" class="text-xs text-orange-800 mt-2">✨ Swap executes immediately</p>
@@ -490,7 +662,7 @@
                             </div>
                         </div>
 
-                        <button id="scheduleSwapBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button id="scheduleSwapBtn" class="touch-target w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 hover:from-orange-600 hover:via-yellow-600 hover:to-green-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
                             <span id="btnText">🔗 Connect Wallet to Swap</span>
                         </button>
                         
@@ -517,24 +689,24 @@
                 <div id="swapsContent" class="p-4 hidden">
                     <!-- Stats Bar on My Swaps Page -->
                     <div class="flex justify-end gap-3 mb-4 text-xs flex-wrap">
-                        <div class="bg-white rounded-lg shadow px-3 py-1 border border-orange-200">
-                            <span class="text-gray-600">Total Swaps:</span>
+                        <div class="card-bg rounded-lg shadow px-3 py-1 border border-custom">
+                            <span class="text-secondary">Total Swaps:</span>
                             <span id="totalSwaps" class="font-bold text-orange-600 ml-1">0</span>
                         </div>
-                        <div class="bg-white rounded-lg shadow px-3 py-1 border border-indigo-200">
-                            <span class="text-gray-600">Limit Orders:</span>
+                        <div class="card-bg rounded-lg shadow px-3 py-1 border border-custom">
+                            <span class="text-secondary">Limit Orders:</span>
                             <span id="totalLimitOrders" class="font-bold text-indigo-600 ml-1">0</span>
                         </div>
-                        <div class="bg-white rounded-lg shadow px-3 py-1 border border-yellow-200">
-                            <span class="text-gray-600">Scheduled:</span>
+                        <div class="card-bg rounded-lg shadow px-3 py-1 border border-custom">
+                            <span class="text-secondary">Scheduled:</span>
                             <span id="scheduledCount" class="font-bold text-yellow-600 ml-1">0</span>
                         </div>
-                        <div class="bg-white rounded-lg shadow px-3 py-1 border border-green-200">
-                            <span class="text-gray-600">Executed:</span>
+                        <div class="card-bg rounded-lg shadow px-3 py-1 border border-custom">
+                            <span class="text-secondary">Executed:</span>
                             <span id="executedCount" class="font-bold text-green-600 ml-1">0</span>
                         </div>
-                        <div id="ownerStats" class="bg-white rounded-lg shadow px-3 py-1 border border-emerald-200 hidden">
-                            <button id="withdrawBtn" class="text-xs bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-2 py-1 rounded font-bold transition" style="display:none;">💰 Withdraw</button>
+                        <div id="ownerStats" class="card-bg rounded-lg shadow px-3 py-1 border border-custom hidden">
+                            <button id="withdrawBtn" class="touch-target text-xs bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-2 py-1 rounded font-bold transition" style="display:none;">💰 Withdraw</button>
                         </div>
                     </div>
                     
@@ -543,7 +715,7 @@
                 <!-- LIMIT ORDER TAB -->
 <div id="limitContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50 hidden">
     <div class="max-w-md mx-auto space-y-3">
-        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-orange-300 rounded-xl p-3 mb-3">
+        <div class="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-custom rounded-xl p-3 mb-3">
             <div class="flex items-center gap-2">
                 <span class="text-2xl">🎯</span>
                 <div>
@@ -553,11 +725,11 @@
             </div>
         </div>
 
-        <div class="bg-white border-2 border-orange-300 rounded-xl p-3 shadow-md">
+        <div class="card-bg border-2 border-custom rounded-xl p-3 shadow-md">
             <label class="text-xs font-bold text-orange-700 mb-2 block">You Pay</label>
             <div class="flex flex-col gap-2">
-                <input type="number" step="0.001" id="amountInLimit" placeholder="0.0" class="w-full text-2xl font-bold bg-transparent border-none outline-none">
-                <select id="tokenInLimit" class="w-full bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-orange-300 rounded-lg px-3 py-2 font-bold">
+                <input type="number" step="0.001" id="amountInLimit" placeholder="0.0" class="w-full text-2xl font-bold bg-transparent border-none outline-none text-primary">
+                <select id="tokenInLimit" class="touch-target w-full bg-gradient-to-r from-orange-100 to-yellow-100 border-2 border-custom rounded-lg px-3 py-2 font-bold">
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x4200000000000000000000000000000000000006">WETH</option>
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
@@ -578,16 +750,16 @@
         </div>
 
         <div class="flex justify-center -my-1 relative z-10">
-            <button id="swapArrowLimit" class="bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
+            <button id="swapArrowLimit" class="touch-target bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white rounded-lg p-2 shadow-lg transition transform hover:scale-110 hover:rotate-180 duration-300 border-2 border-white">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
                 </svg>
             </button>
         </div>
 
-        <div class="bg-white border-2 border-green-300 rounded-xl p-3 shadow-md">
+        <div class="card-bg border-2 border-green-300 rounded-xl p-3 shadow-md">
             <label class="text-xs font-bold text-green-700 mb-2 block">You Receive</label>
-            <select id="tokenOutLimit" class="w-full bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
+            <select id="tokenOutLimit" class="touch-target w-full bg-gradient-to-r from-green-100 to-emerald-100 border-2 border-green-300 rounded-lg px-3 py-2 font-bold">
                                     <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
                                     <option value="0x0000000000000000000000000000000000000000">ETH</option>
                                     <option value="0x4200000000000000000000000000000000000006">WETH</option>
@@ -610,7 +782,7 @@
         <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-3">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-bold text-blue-800">📊 Current Market Price</span>
-                <button id="refreshPriceBtn" class="text-blue-600 hover:text-blue-800 transition text-xs">🔄</button>
+                <button id="refreshPriceBtn" class="touch-target text-blue-600 hover:text-blue-800 transition text-xs">🔄</button>
             </div>
             <div id="currentMarketPrice" class="text-center">
                 <div class="text-xs text-blue-600 mb-1">
@@ -629,14 +801,14 @@
                 <span class="text-xs font-semibold text-orange-700 whitespace-nowrap">When 1</span>
                 <span id="targetTokenIn" class="text-xs font-bold text-orange-900 whitespace-nowrap">ETH</span>
                 <span class="text-xs font-semibold text-orange-700">=</span>
-                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="w-24 sm:w-32 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base">
+                <input type="number" step="0.000001" id="targetPrice" placeholder="0.0" class="w-24 sm:w-32 px-2 sm:px-3 py-2 border-2 border-yellow-200 rounded-lg font-bold text-center text-sm sm:text-base input-bg text-primary">
                 <span id="targetTokenOut" class="text-xs font-bold text-orange-900 whitespace-nowrap">USDC</span>
             </div>
             
             <!-- Your Order Rate Display -->
-            <div id="orderRateInfo" class="bg-white border-2 border-orange-200 rounded-lg p-2 mb-2 hidden">
+            <div id="orderRateInfo" class="card-bg border-2 border-orange-200 rounded-lg p-2 mb-2 hidden">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold text-gray-700">Your Order Rate:</span>
+                    <span class="text-xs font-semibold text-secondary">Your Order Rate:</span>
                     <span class="text-xs font-bold text-orange-900" id="orderRateValue">-</span>
                 </div>
                 <div id="priceDifference" class="text-xs text-center mt-1 font-semibold">-</div>
@@ -647,7 +819,7 @@
             <!-- Expiration Options -->
             <div class="mt-3">
                 <label class="text-xs font-bold text-orange-800 mb-2 block">⏰ Order Expiration</label>
-                <select id="expirationSelect" class="w-full bg-white border-2 border-yellow-200 rounded-lg px-3 py-2 text-sm font-semibold">
+                <select id="expirationSelect" class="touch-target w-full bg-white border-2 border-yellow-200 rounded-lg px-3 py-2 text-sm font-semibold input-bg text-primary">
                     <option value="0">Never (Good til Cancelled)</option>
                     <option value="600">10 Minutes</option>
                     <option value="3600">1 Hour</option>
@@ -658,13 +830,13 @@
                 </select>
                 <div id="customExpirationInput" class="mt-2 hidden">
                     <label class="text-xs text-orange-700 block mb-1">Custom Expiration (hours):</label>
-                    <input type="number" id="customExpirationHours" min="1" max="720" placeholder="Hours" class="w-full px-3 py-2 border-2 border-yellow-200 rounded-lg text-sm">
+                    <input type="number" id="customExpirationHours" min="1" max="720" placeholder="Hours" class="touch-target w-full px-3 py-2 border-2 border-yellow-200 rounded-lg text-sm input-bg text-primary">
                 </div>
                 <div id="expirationPreview" class="text-xs text-orange-600 mt-1 hidden"></div>
             </div>
         </div>
 
-        <button id="createLimitBtn" class="w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
+        <button id="createLimitBtn" class="touch-target w-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-500 hover:from-orange-600 hover:via-yellow-600 hover:to-orange-600 text-white font-black py-3 rounded-xl transition shadow-xl transform hover:scale-105 border-2 border-white disabled:opacity-50 disabled:cursor-not-allowed">
             <span id="limitBtnText">🔗 Connect Wallet</span>
         </button>
     </div>
@@ -759,6 +931,13 @@
             const savedSlippage = localStorage.getItem('mangoswap_slippage') || '5';
             slippageTolerance = parseFloat(savedSlippage);
             updateSlippageUI();
+            
+            // Load theme preference
+            const savedTheme = localStorage.getItem('mangoswap_theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                document.getElementById('themeIcon').textContent = '☀️';
+            }
         }
 
         // Update slippage UI
@@ -767,10 +946,10 @@
                 const value = parseFloat(btn.dataset.value);
                 if (value === slippageTolerance) {
                     btn.classList.add('bg-orange-500', 'text-white', 'border-orange-500');
-                    btn.classList.remove('border-orange-200');
+                    btn.classList.remove('border-custom');
                 } else {
                     btn.classList.remove('bg-orange-500', 'text-white', 'border-orange-500');
-                    btn.classList.add('border-orange-200');
+                    btn.classList.add('border-custom');
                 }
             });
             document.getElementById('slippageDisplay').textContent = slippageTolerance;
@@ -780,9 +959,33 @@
         // Initialize settings
         loadSettings();
         
+        // Theme toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                icon.textContent = '☀️';
+                localStorage.setItem('mangoswap_theme', 'dark');
+            } else {
+                icon.textContent = '🌙';
+                localStorage.setItem('mangoswap_theme', 'light');
+            }
+        });
+        
         // Disable button initially
         document.getElementById('scheduleSwapBtn').disabled = true;
         document.getElementById('createLimitBtn').disabled = true;
+
+        // Function to update username display
+        function updateUsernameDisplay(address) {
+            const shortAddress = address.slice(0, 6) + '...' + address.slice(-4);
+            const username = 'User ' + shortAddress;
+            const initial = address.slice(2, 3).toUpperCase();
+            
+            document.getElementById('userAvatar').textContent = initial;
+            document.getElementById('accountUsername').textContent = username;
+        }
 
         // Function to update all button states when wallet connects/disconnects
         function updateButtonStates() {
@@ -815,15 +1018,11 @@
 
         // Edit slippage button
         document.getElementById('editSlippageBtn').addEventListener('click', () => {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'block';
+            document.getElementById('settingsModal').classList.remove('hidden');
         });
 
         document.getElementById('closeSettings').addEventListener('click', () => {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
+            document.getElementById('settingsModal').classList.add('hidden');
         });
 
         // Slippage buttons
@@ -939,22 +1138,16 @@
         });
 
         function showWalletModal() {
-            const modal = document.getElementById('walletModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'block';
+            document.getElementById('walletModal').classList.remove('hidden');
         }
 
         function hideWalletModal() {
-            const modal = document.getElementById('walletModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
+            document.getElementById('walletModal').classList.add('hidden');
         }
         
         function showSuccessModal(txHash, amountOut, tokenOutSymbol) {
             // Show modal
-            const modal = document.getElementById('successModal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'block';
+            document.getElementById('successModal').classList.remove('hidden');
             
             // Set content
             document.getElementById('successAmount').textContent = `${parseFloat(amountOut).toFixed(6)} ${tokenOutSymbol}`;
@@ -965,9 +1158,7 @@
         }
         
         function hideSuccessModal() {
-            const modal = document.getElementById('successModal');
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
+            document.getElementById('successModal').classList.add('hidden');
         }
         
         function createConfetti() {
@@ -1075,7 +1266,7 @@
                 
                 document.getElementById('connectBtn').classList.add('hidden');
                 document.getElementById('accountInfo').classList.remove('hidden');
-                document.getElementById('accountAddress').textContent = account.slice(0, 6) + '...' + account.slice(-4);
+                updateUsernameDisplay(account);
                 document.getElementById('balanceSection').style.display = 'block';
                 
                 // Update all button states
@@ -1164,7 +1355,7 @@
         function displaySwaps(orders) {
             const list = document.getElementById('swapsList');
             if (orders.length === 0) {
-                list.innerHTML = '<div class="text-center py-12 text-gray-500"><p>No orders yet! 🥭</p><p class="text-sm mt-2">Create your first swap or limit order to get started</p></div>';
+                list.innerHTML = '<div class="text-center py-12 text-secondary"><p>No orders yet! 🥭</p><p class="text-sm mt-2">Create your first swap or limit order to get started</p></div>';
                 return;
             }
             list.innerHTML = orders.map(s => {
@@ -1176,17 +1367,17 @@
                     const expiryText = s.expiryTime === 0 ? 'Never expires' : `Expires: ${s.expiryTime.toLocaleString()}`;
                     
                     return `
-                    <div class="border-2 border-${statusColor}-200 rounded-xl p-4 mb-3 bg-gradient-to-r from-${statusColor}-50 to-purple-50 shadow-lg">
+                    <div class="border-2 border-${statusColor}-200 rounded-xl p-4 mb-3 bg-gradient-to-r from-${statusColor}-50 to-purple-50 shadow-lg card-bg">
                         <div class="flex justify-between items-start mb-3">
                             <span class="px-3 py-1 rounded-full text-xs font-semibold bg-${statusColor}-100 text-${statusColor}-800">🎯 ${s.status} Limit Order</span>
                             <div class="text-right">
-                                <div class="font-bold text-lg">${parseFloat(s.amountIn).toFixed(4)} ${tokenInName} → ${tokenOutName}</div>
+                                <div class="font-bold text-lg text-primary">${parseFloat(s.amountIn).toFixed(4)} ${tokenInName} → ${tokenOutName}</div>
                                 <div class="text-sm text-${statusColor}-700">Target: ${parseFloat(s.targetPrice).toFixed(6)} ${tokenOutName}</div>
                             </div>
                         </div>
-                        <div class="text-xs text-gray-500 mb-2">${expiryText}</div>
+                        <div class="text-xs text-secondary mb-2">${expiryText}</div>
                         ${s.status === 'Executed' ? `<div class="text-xs text-green-700 font-semibold mb-2">✅ Received: ${parseFloat(s.amountOut).toFixed(6)} ${tokenOutName}</div>` : ''}
-                        ${s.status === 'Scheduled' ? `<button onclick="cancelLimitOrder(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition text-sm">Cancel Order</button>` : ''}
+                        ${s.status === 'Scheduled' ? `<button onclick="cancelLimitOrder(${s.id})" class="touch-target w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition text-sm">Cancel Order</button>` : ''}
                     </div>
                     `;
                 }
@@ -1194,17 +1385,17 @@
                 const statusColor = s.status === 'Scheduled' ? 'yellow' : s.status === 'Executed' ? 'green' : 'gray';
                 
                 return `
-                <div class="border-2 border-${statusColor}-200 rounded-xl p-4 mb-3 bg-white shadow-lg">
+                <div class="border-2 border-${statusColor}-200 rounded-xl p-4 mb-3 card-bg shadow-lg">
                     <div class="flex justify-between items-start mb-3">
                         <span class="px-3 py-1 rounded-full text-xs font-semibold bg-${statusColor}-100 text-${statusColor}-800">${s.status} Swap</span>
                         <div class="text-right">
-                            <div class="font-bold text-lg">${parseFloat(s.amountIn).toFixed(4)} ${tokenInName} → ${tokenOutName}</div>
-                            <div class="text-sm text-gray-600">Min: ${parseFloat(s.minAmountOut).toFixed(6)} ${tokenOutName}</div>
+                            <div class="font-bold text-lg text-primary">${parseFloat(s.amountIn).toFixed(4)} ${tokenInName} → ${tokenOutName}</div>
+                            <div class="text-sm text-secondary">Min: ${parseFloat(s.minAmountOut).toFixed(6)} ${tokenOutName}</div>
                         </div>
                     </div>
-                    <div class="text-xs text-gray-500 mb-2">Executes: ${s.executionTime.toLocaleString()}</div>
+                    <div class="text-xs text-secondary mb-2">Executes: ${s.executionTime.toLocaleString()}</div>
                     ${s.status === 'Executed' ? `<div class="text-xs text-green-700 font-semibold mb-2">✅ Received: ${parseFloat(s.amountOut).toFixed(6)} ${tokenOutName}</div>` : ''}
-                    ${s.status === 'Scheduled' ? `<button onclick="cancelSwap(${s.id})" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition text-sm">Cancel Swap</button>` : ''}
+                    ${s.status === 'Scheduled' ? `<button onclick="cancelSwap(${s.id})" class="touch-target w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white py-2 rounded-lg font-bold transition text-sm">Cancel Swap</button>` : ''}
                 </div>
             `;
             }).join('');
@@ -1354,7 +1545,7 @@
                 if (isInstant) {
                     console.log('Executing instant swap...');
                     
-                    document.getElementById('btnText').textContent = 'Swapping... ⏳';
+                    document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Swapping...';
                     document.getElementById('scheduleSwapBtn').disabled = true;
                     
                     // Try batched swap first (GAS FREE with paymaster)
@@ -1381,12 +1572,12 @@
                             );
                             
                             const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-                            document.getElementById('btnText').textContent = 'Approving... ⏳';
+                            document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Approving...';
                             await approveTx.wait();
                             console.log('Token approved');
                         }
                         
-                        document.getElementById('btnText').textContent = 'Swapping... ⏳';
+                        document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Swapping...';
                         
                         const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
                             await contract.instantSwap(tokenIn, tokenOut, amountWei, minOutWei, { 
@@ -1432,13 +1623,13 @@
                         );
                         
                         const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-                        document.getElementById('btnText').textContent = 'Approving... ⏳';
+                        document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Approving...';
                         document.getElementById('scheduleSwapBtn').disabled = true;
                         await approveTx.wait();
                         console.log('Token approved');
                     }
                     
-                    document.getElementById('btnText').textContent = 'Scheduling... ⏳';
+                    document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Scheduling...';
                     
                     const tx = tokenIn === '0x0000000000000000000000000000000000000000' ?
                         await contract.scheduleSwap(tokenIn, tokenOut, amountWei, minOutWei, execTime, { value: amountWei }) :
@@ -1511,7 +1702,7 @@
                 const amountWei = ethers.utils.parseEther(amount);
                 const targetPriceWei = ethers.utils.parseEther(targetPrice);
                 
-                document.getElementById('limitBtnText').textContent = 'Creating...⏳';
+                document.getElementById('limitBtnText').innerHTML = '<span class="spinner"></span> Creating...';
                 document.getElementById('createLimitBtn').disabled = true;
                 
                 if (tokenIn !== '0x0000000000000000000000000000000000000000') {
@@ -1523,12 +1714,12 @@
                     );
                     
                     const approveTx = await tokenContract.approve(CONTRACT_ADDRESS, amountWei);
-                    document.getElementById('limitBtnText').textContent = 'Approving...⏳';
+                    document.getElementById('limitBtnText').innerHTML = '<span class="spinner"></span> Approving...';
                     await approveTx.wait();
                     console.log('Token approved');
                 }
                 
-                document.getElementById('limitBtnText').textContent = 'Creating Order...⏳';
+                document.getElementById('limitBtnText').innerHTML = '<span class="spinner"></span> Creating Order...';
                 
                 const expiryTime = getExpirationTime();
                 
@@ -1587,37 +1778,33 @@
         }
 
         function switchTab(tab) {
+            // Remove active classes from all tabs
+            document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
+            
+            document.getElementById('scheduleTab').classList.add('text-secondary');
+            document.getElementById('limitTab').classList.add('text-secondary');
+            document.getElementById('swapsTab').classList.add('text-secondary');
+            
+            // Hide all content
+            document.getElementById('scheduleContent').classList.add('hidden');
+            document.getElementById('limitContent').classList.add('hidden');
+            document.getElementById('swapsContent').classList.add('hidden');
+            
             if (tab === 'schedule') {
                 document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('scheduleTab').classList.remove('text-gray-600');
-                document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('limitTab').classList.add('text-gray-600');
-                document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapsTab').classList.add('text-gray-600');
+                document.getElementById('scheduleTab').classList.remove('text-secondary');
                 document.getElementById('scheduleContent').classList.remove('hidden');
-                document.getElementById('limitContent').classList.add('hidden');
-                document.getElementById('swapsContent').classList.add('hidden');
             } else if (tab === 'limit') {
                 document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('limitTab').classList.remove('text-gray-600');
-                document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('scheduleTab').classList.add('text-gray-600');
-                document.getElementById('swapsTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapsTab').classList.add('text-gray-600');
+                document.getElementById('limitTab').classList.remove('text-secondary');
                 document.getElementById('limitContent').classList.remove('hidden');
-                document.getElementById('scheduleContent').classList.add('hidden');
-                document.getElementById('swapsContent').classList.add('hidden');
                 updateMarketPrice();
             } else {
                 document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('swapsTab').classList.remove('text-gray-600');
-                document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('scheduleTab').classList.add('text-gray-600');
-                document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
-                document.getElementById('limitTab').classList.add('text-gray-600');
+                document.getElementById('swapsTab').classList.remove('text-secondary');
                 document.getElementById('swapsContent').classList.remove('hidden');
-                document.getElementById('scheduleContent').classList.add('hidden');
-                document.getElementById('limitContent').classList.add('hidden');
                 if (isConnected) loadData();
             }
         }
@@ -1916,4 +2103,3 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-

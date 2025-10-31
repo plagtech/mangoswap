@@ -460,7 +460,7 @@
                         <img src="mango-logo.png" alt="MangoSwap" class="w-10 h-10 inline-block"> 
                         <span class="bg-gradient-to-r from-orange-500 via-yellow-500 to-green-500 bg-clip-text text-transparent">MangoSwap</span>
                     </h1>
-                    <p class="text-secondary text-sm font-medium">Sweet Swaps on Base ⛽ <span class="bg-green-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">GAS FREE</span></p>
+                    <p class="text-secondary text-sm font-medium">Sweet Swaps on Base ⛽</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button id="themeToggle" class="touch-target bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
@@ -674,17 +674,24 @@
                         </div>
 
                         <div class="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-3 border border-green-300">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-xs font-bold text-green-800">Fee Breakdown</span>
+                                <div class="flex gap-2">
+                                    <span id="gasFreeLabel" class="hidden bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">✨ GAS FREE</span>
+                                    <span id="oneClickLabel" class="hidden bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-2 py-0.5 rounded-full text-xs font-bold">⚡ ONE-CLICK</span>
+                                </div>
+                            </div>
                             <div class="flex justify-between text-xs mb-1">
                                 <span class="text-green-800 font-semibold">Platform Fee</span>
                                 <span class="font-bold text-green-900">0.5%</span>
                             </div>
                             <div class="flex justify-between text-xs mb-1">
                                 <span class="text-green-800 font-semibold">Network Fee</span>
-                                <span class="font-bold text-green-900">~0.3%</span>
+                                <span class="font-bold text-green-900" id="networkFeeText">~0.3%</span>
                             </div>
                             <div class="flex justify-between text-xs pt-1 border-t border-green-300">
                                 <span class="font-bold text-green-900">Total Fee</span>
-                                <span class="font-bold text-orange-600">~0.8%</span>
+                                <span class="font-bold text-orange-600" id="totalFeeText">~0.8%</span>
                             </div>
                         </div>
 
@@ -1001,6 +1008,13 @@
         let selectedWallet = null;
         let isConnected = false;
         
+        // Base Account capabilities
+        let baseAccountCapabilities = {
+            atomicBatch: false,
+            paymasterService: false,
+            auxiliaryFunds: false
+        };
+        
         // Settings state
         let slippageTolerance = 5;
         let userBalanceFrom = 0;
@@ -1094,11 +1108,77 @@
             }
         }
 
+        // Detect Base Account capabilities
+        async function detectBaseAccountCapabilities(address) {
+            try {
+                const capabilities = await window.ethereum.request({
+                    method: 'wallet_getCapabilities',
+                    params: [address]
+                }).catch(() => null);
+                
+                if (capabilities && capabilities['0x2105']) {
+                    const baseCapabilities = capabilities['0x2105'];
+                    
+                    baseAccountCapabilities = {
+                        atomicBatch: baseCapabilities.atomicBatch?.supported || false,
+                        paymasterService: baseCapabilities.paymasterService?.supported || false,
+                        auxiliaryFunds: baseCapabilities.auxiliaryFunds?.supported || false
+                    };
+                    
+                    console.log('Base Account Capabilities:', baseAccountCapabilities);
+                    updateCapabilityUI();
+                }
+            } catch (error) {
+                console.error('Error detecting capabilities:', error);
+            }
+        }
+        
+        // Update UI based on capabilities
+        function updateCapabilityUI() {
+            const gasFreeLabel = document.getElementById('gasFreeLabel');
+            const oneClickLabel = document.getElementById('oneClickLabel');
+            const networkFeeText = document.getElementById('networkFeeText');
+            const totalFeeText = document.getElementById('totalFeeText');
+            
+            // Show gas-free badge if paymaster is supported
+            if (baseAccountCapabilities.paymasterService) {
+                if (gasFreeLabel) gasFreeLabel.classList.remove('hidden');
+                
+                // Update fee display to show gas is covered
+                if (networkFeeText) {
+                    networkFeeText.innerHTML = '<span class="line-through">~0.3%</span> <span class="text-green-600 font-bold">FREE</span>';
+                }
+                if (totalFeeText) {
+                    totalFeeText.textContent = '0.5%';
+                }
+            }
+            
+            // Show one-click badge if atomic batch is supported
+            if (baseAccountCapabilities.atomicBatch) {
+                if (oneClickLabel) oneClickLabel.classList.remove('hidden');
+            }
+            
+            // Update button text for Base Account users
+            if (baseAccountCapabilities.paymasterService && baseAccountCapabilities.atomicBatch) {
+                const btnText = document.getElementById('btnText');
+                if (btnText && isConnected) {
+                    btnText.textContent = '✨ Swap Now (Gas Free)';
+                }
+            }
+        }
+        
         // Function to update all button states when wallet connects/disconnects
         function updateButtonStates() {
             if (isConnected) {
                 document.getElementById('scheduleSwapBtn').disabled = false;
-                document.getElementById('btnText').textContent = '🥭 Swap Now 🌴';
+                
+                // Show capability-based button text
+                if (baseAccountCapabilities.paymasterService && baseAccountCapabilities.atomicBatch) {
+                    document.getElementById('btnText').textContent = '✨ Swap Now (Gas Free)';
+                } else {
+                    document.getElementById('btnText').textContent = '🥭 Swap Now 🌴';
+                }
+                
                 document.getElementById('createLimitBtn').disabled = false;
                 document.getElementById('limitBtnText').textContent = '🎯 Create Limit Order';
             } else {
@@ -1390,6 +1470,10 @@
                 console.log('Loading data...');
                 loadData();
                 updateBalance();
+                
+                // Detect Base Account capabilities
+                await detectBaseAccountCapabilities(account);
+                
                 console.log('Connection complete!');
             } catch (e) {
                 console.error('Connection error details:', e);

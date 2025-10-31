@@ -7,6 +7,7 @@
     <link rel="icon" type="image/png" href="mango-logo.png">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/viem@2.21.0/dist/viem.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@0.1.2/dist/index.umd.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="MangoSwap" />
@@ -908,6 +909,69 @@
         // PAYMASTER CONFIGURATION - Update this with your paymaster service URL
         const PAYMASTER_URL = 'https://api.developer.coinbase.com/rpc/v1/base/0XFTXVSOwf0H30PN84h07BmJgiJhNtRw';
         
+        // Farcaster Mini App SDK - with safe initialization
+        let sdk = null;
+        let miniAppContext = null;
+        let isInMiniApp = false;
+        
+        // Load Mini App context on page load
+        async function loadMiniAppContext() {
+            try {
+                // Wait for SDK to be available
+                if (window.FarcasterMiniAppSDK && window.FarcasterMiniAppSDK.sdk) {
+                    sdk = window.FarcasterMiniAppSDK.sdk;
+                    
+                    isInMiniApp = await sdk.isInMiniApp();
+                    
+                    if (isInMiniApp) {
+                        miniAppContext = await sdk.context;
+                        console.log('Mini App Context loaded:', miniAppContext);
+                        
+                        // Update UI with user data if available
+                        if (miniAppContext.user) {
+                            updateUserDisplay(miniAppContext.user);
+                        }
+                    }
+                } else {
+                    console.log('Not running in Mini App context or SDK not available');
+                }
+            } catch (error) {
+                console.error('Error loading Mini App context:', error);
+            }
+        }
+        
+        // Update user display with Farcaster profile data
+        function updateUserDisplay(user) {
+            const displayName = user.displayName || user.username || 'User';
+            const username = user.username || '';
+            const pfpUrl = user.pfpUrl;
+            
+            // Update username display
+            const usernameEl = document.getElementById('accountUsername');
+            if (usernameEl) {
+                usernameEl.textContent = displayName;
+            }
+            
+            // Update avatar
+            const avatarEl = document.getElementById('userAvatar');
+            if (avatarEl && pfpUrl) {
+                // Replace text avatar with actual profile picture
+                avatarEl.innerHTML = `<img src="${pfpUrl}" alt="${displayName}" class="w-full h-full rounded-full object-cover">`;
+            } else if (avatarEl) {
+                // Use first letter of display name
+                const initial = displayName.charAt(0).toUpperCase();
+                avatarEl.textContent = initial;
+            }
+        }
+        
+        // Initialize Mini App context when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadMiniAppContext);
+        } else {
+            // DOM already loaded, wait a bit for SDK to initialize
+            setTimeout(loadMiniAppContext, 100);
+        }
+        
         // Updated ABI for MangoSwap V4
         const ABI = [
             "function instantSwap(address tokenIn, address tokenOut, uint256 amountIn, uint256 minAmountOut) external payable returns (uint256)",
@@ -1004,12 +1068,30 @@
 
         // Function to update username display
         function updateUsernameDisplay(address) {
-            const shortAddress = address.slice(0, 6) + '...' + address.slice(-4);
-            const username = 'User ' + shortAddress;
-            const initial = address.slice(2, 3).toUpperCase();
-            
-            document.getElementById('userAvatar').textContent = initial;
-            document.getElementById('accountUsername').textContent = username;
+            // If we have Mini App user data, use that instead
+            if (miniAppContext && miniAppContext.user) {
+                const user = miniAppContext.user;
+                const displayName = user.displayName || user.username || 'User';
+                const pfpUrl = user.pfpUrl;
+                
+                document.getElementById('accountUsername').textContent = displayName;
+                
+                const avatarEl = document.getElementById('userAvatar');
+                if (pfpUrl) {
+                    avatarEl.innerHTML = `<img src="${pfpUrl}" alt="${displayName}" class="w-full h-full rounded-full object-cover">`;
+                } else {
+                    const initial = displayName.charAt(0).toUpperCase();
+                    avatarEl.textContent = initial;
+                }
+            } else {
+                // Fallback to wallet address display
+                const shortAddress = address.slice(0, 6) + '...' + address.slice(-4);
+                const username = 'User ' + shortAddress;
+                const initial = address.slice(2, 3).toUpperCase();
+                
+                document.getElementById('userAvatar').textContent = initial;
+                document.getElementById('accountUsername').textContent = username;
+            }
         }
 
         // Function to update all button states when wallet connects/disconnects

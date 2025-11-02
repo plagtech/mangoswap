@@ -555,9 +555,9 @@
         <div id="mainContent">
             <div class="card-bg rounded-xl shadow-xl overflow-hidden border-2 border-custom">
                 <div class="flex border-b-2 border-custom">
-    <button id="scheduleTab" class="touch-target flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs sm:text-sm">Swap</button>
-    <button id="limitTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm">Limit Order</button>
-    <button id="swapsTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm">My Orders</button>
+    <button id="scheduleTab" class="touch-target flex-1 px-3 py-2 font-bold bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs sm:text-sm cursor-pointer" style="pointer-events: auto;">Swap</button>
+    <button id="limitTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm cursor-pointer" style="pointer-events: auto;">Limit Order</button>
+    <button id="swapsTab" class="touch-target flex-1 px-3 py-2 font-bold text-secondary hover:bg-orange-50 transition text-xs sm:text-sm cursor-pointer" style="pointer-events: auto;">My Orders</button>
 </div>
 
                 <div id="scheduleContent" class="p-4 bg-gradient-to-br from-orange-50 to-yellow-50">
@@ -927,10 +927,6 @@
         // Quick Auth state
         let authToken = null;
         let authenticatedUserData = null;
-        let isAuthenticated = false;
-        
-        // Quick Auth state
-        let authToken = null;
         let authenticatedUser = null;
         let isAuthenticated = false;
         
@@ -2119,6 +2115,8 @@
         }
 
         function switchTab(tab) {
+            console.log('Switching to tab:', tab);
+            
             // Remove active classes from all tabs
             document.getElementById('scheduleTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
             document.getElementById('limitTab').classList.remove('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
@@ -2137,16 +2135,19 @@
                 document.getElementById('scheduleTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
                 document.getElementById('scheduleTab').classList.remove('text-secondary');
                 document.getElementById('scheduleContent').classList.remove('hidden');
+                console.log('Swap tab activated');
             } else if (tab === 'limit') {
                 document.getElementById('limitTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
                 document.getElementById('limitTab').classList.remove('text-secondary');
                 document.getElementById('limitContent').classList.remove('hidden');
                 updateMarketPrice();
+                console.log('Limit Order tab activated');
             } else {
                 document.getElementById('swapsTab').classList.add('bg-gradient-to-r', 'from-orange-500', 'to-yellow-500', 'text-white');
                 document.getElementById('swapsTab').classList.remove('text-secondary');
                 document.getElementById('swapsContent').classList.remove('hidden');
                 if (isConnected) loadData();
+                console.log('My Orders tab activated');
             }
         }
         

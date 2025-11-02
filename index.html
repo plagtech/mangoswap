@@ -463,6 +463,9 @@
                     <p class="text-secondary text-sm font-medium">Sweet Swaps on Base ⛽</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button id="shareBtn" class="touch-target bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Share on Farcaster" style="display:none;">
+                        📢
+                    </button>
                     <button id="themeToggle" class="touch-target bg-gradient-to-r from-orange-400 to-yellow-400 hover:from-orange-500 hover:to-yellow-500 text-white px-4 py-2 rounded-lg font-bold shadow-md transition transform hover:scale-105" title="Toggle Dark Mode">
                         <span id="themeIcon">🌙</span>
                     </button>
@@ -528,9 +531,9 @@
                                 <div class="text-2xl font-bold text-green-600" id="successAmount">-</div>
                             </div>
                             
-                            <a id="basescanLink" href="#" target="_blank" rel="noopener noreferrer" class="touch-target block w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition mb-3">
+                            <button id="basescanLink" class="touch-target block w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-3 rounded-xl transition mb-3">
                                 View on Basescan 🔍
-                            </a>
+                            </button>
                             
                             <button id="closeSuccessModal" class="touch-target w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-bold py-3 rounded-xl transition">
                                 Done 🥭
@@ -888,9 +891,9 @@
                         <span class="text-2xl">🔒</span>
                         <div>
                             <div class="text-xs font-semibold text-green-800">Smart Contract V4</div>
-                            <a href="https://basescan.org/address/0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16" target="_blank" rel="noopener noreferrer" class="font-mono text-xs text-green-700 hover:text-green-900 hover:underline">
+                            <button id="contractLink" class="font-mono text-xs text-green-700 hover:text-green-900 hover:underline bg-transparent border-none cursor-pointer p-0">
                                 0xb81f...4D16
-                            </a>
+                            </button>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1095,10 +1098,44 @@
         
         // Initialize Mini App context when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadMiniAppContext);
+            document.addEventListener('DOMContentLoaded', () => {
+                loadMiniAppContext();
+                setupNavigationHandlers();
+            });
         } else {
             // DOM already loaded, wait a bit for SDK to initialize
-            setTimeout(loadMiniAppContext, 100);
+            setTimeout(() => {
+                loadMiniAppContext();
+                setupNavigationHandlers();
+            }, 100);
+        }
+        
+        // Setup navigation handlers for external links
+        function setupNavigationHandlers() {
+            // Contract link in security banner
+            const contractLink = document.getElementById('contractLink');
+            if (contractLink) {
+                contractLink.onclick = () => {
+                    const contractUrl = 'https://basescan.org/address/0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16';
+                    if (sdk && isInMiniApp) {
+                        sdk.actions.openUrl(contractUrl);
+                    } else {
+                        window.open(contractUrl, '_blank');
+                    }
+                };
+            }
+            
+            // Share button - only show in Mini App
+            const shareBtn = document.getElementById('shareBtn');
+            if (shareBtn && sdk && isInMiniApp) {
+                shareBtn.style.display = 'block';
+                shareBtn.onclick = () => {
+                    sdk.actions.composeCast({
+                        text: '🥭 Just discovered MangoSwap - gas-free swaps on Base with limit orders and scheduled trades!',
+                        embeds: [window.location.href]
+                    });
+                };
+            }
         }
         
         // Updated ABI for MangoSwap V4
@@ -1460,7 +1497,17 @@
             
             // Set content
             document.getElementById('successAmount').textContent = `${parseFloat(amountOut).toFixed(6)} ${tokenOutSymbol}`;
-            document.getElementById('basescanLink').href = `https://basescan.org/tx/${txHash}`;
+            
+            // Set Basescan link with SDK navigation
+            const basescanBtn = document.getElementById('basescanLink');
+            const basescanUrl = `https://basescan.org/tx/${txHash}`;
+            basescanBtn.onclick = () => {
+                if (sdk && isInMiniApp) {
+                    sdk.actions.openUrl(basescanUrl);
+                } else {
+                    window.open(basescanUrl, '_blank');
+                }
+            };
             
             // Create confetti
             createConfetti();

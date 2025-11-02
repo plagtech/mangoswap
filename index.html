@@ -8,6 +8,22 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/viem@2.21.0/dist/viem.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk@0.1.2/dist/index.umd.js"></script>
+    
+    <!-- Alternative ESM loading for better compatibility -->
+    <script type="module">
+        import { sdk as farcasterSdk } from 'https://esm.sh/@farcaster/miniapp-sdk@0.1.2';
+        window.farcasterSdkESM = farcasterSdk;
+        
+        // Call ready() immediately with ESM version
+        if (farcasterSdk && farcasterSdk.actions && farcasterSdk.actions.ready) {
+            farcasterSdk.actions.ready().then(() => {
+                console.log('✅ ESM ready() called successfully');
+            }).catch(e => {
+                console.error('ESM ready() failed:', e);
+            });
+        }
+    </script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
 <!-- Open Graph Meta Tags -->
   <meta property="og:title" content="MangoSwap" />
@@ -21,7 +37,7 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@Mngoswp" />
+  <meta name="twitter:site" content="@YourTwitterHandle" />
   
   <!-- Farcaster Mini App Embed Metadata -->
   <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
@@ -296,6 +312,38 @@
         }
     </style>
 <body>
+
+    <!-- CRITICAL: Call ready() as early as possible -->
+    <script>
+        (function() {
+            // Try to call ready() immediately when body starts loading
+            function attemptReady() {
+                try {
+                    if (window.FarcasterMiniAppSDK && window.FarcasterMiniAppSDK.sdk) {
+                        window.FarcasterMiniAppSDK.sdk.actions.ready().then(() => {
+                            console.log('✅ Early ready() call successful');
+                        }).catch(e => console.log('Early ready() call failed:', e));
+                        return true;
+                    }
+                } catch (e) {
+                    console.log('Early ready() attempt failed:', e);
+                }
+                return false;
+            }
+            
+            // Try immediately
+            if (!attemptReady()) {
+                // If not available, keep trying
+                let attempts = 0;
+                const interval = setInterval(() => {
+                    attempts++;
+                    if (attemptReady() || attempts > 20) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+            }
+        })();
+    </script>
 
     <!-- Onboarding Modal -->
     <div class="onboarding-overlay" id="onboardingModal">

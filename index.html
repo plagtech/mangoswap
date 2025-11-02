@@ -24,10 +24,7 @@
   <meta name="twitter:site" content="@Mngoswp" />
   
   <!-- Farcaster Mini App Embed Metadata -->
-  <meta name="fc:miniapp" content='{"version":"next","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
-  
-  <!-- Existing Farcaster Frame metadata -->
-  <meta property="fc:frame" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
+  <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
 </head>
     <style>
         /* Base styles with smooth transitions */
@@ -1101,13 +1098,60 @@
             document.addEventListener('DOMContentLoaded', () => {
                 loadMiniAppContext();
                 setupNavigationHandlers();
+                initializeApp();
             });
         } else {
             // DOM already loaded, wait a bit for SDK to initialize
             setTimeout(() => {
                 loadMiniAppContext();
                 setupNavigationHandlers();
+                initializeApp();
             }, 100);
+        }
+        
+        // CRITICAL: Backup ready() call for preview tool
+        // Call ready() as soon as possible if SDK is available
+        window.addEventListener('load', () => {
+            setTimeout(async () => {
+                try {
+                    if (window.FarcasterMiniAppSDK?.sdk?.actions?.ready) {
+                        await window.FarcasterMiniAppSDK.sdk.actions.ready();
+                        console.log('✅ Backup ready() called on window load');
+                    }
+                } catch (e) {
+                    console.log('Backup ready() not needed or already called');
+                }
+            }, 200);
+        });
+        
+        // Initialize app and call ready()
+        async function initializeApp() {
+            // Wait a moment for everything to render
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // CRITICAL: Always call ready() to hide splash screen
+            // This must be called even during testing/preview
+            try {
+                if (window.FarcasterMiniAppSDK && window.FarcasterMiniAppSDK.sdk) {
+                    await window.FarcasterMiniAppSDK.sdk.actions.ready();
+                    console.log('✅ Mini App ready signal sent');
+                } else if (sdk) {
+                    await sdk.actions.ready();
+                    console.log('✅ Mini App ready signal sent');
+                } else {
+                    console.log('⚠️ SDK not available, ready() not called');
+                }
+            } catch (error) {
+                console.error('Error calling ready():', error);
+                // Try calling it anyway in case error is misleading
+                try {
+                    if (window.FarcasterMiniAppSDK?.sdk?.actions?.ready) {
+                        await window.FarcasterMiniAppSDK.sdk.actions.ready();
+                    }
+                } catch (e) {
+                    console.error('Retry failed:', e);
+                }
+            }
         }
         
         // Setup navigation handlers for external links

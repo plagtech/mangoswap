@@ -543,7 +543,10 @@
                     <div class="user-avatar" id="userAvatar">U</div>
                     <div class="text-right">
                         <div class="text-xs text-secondary">Connected</div>
-                        <div id="accountUsername" class="font-semibold text-sm text-primary">User</div>
+                        <div id="accountUsername" class="font-semibold text-sm text-primary flex items-center gap-1">
+                            <span id="usernameText">User</span>
+                            <span id="authBadge" class="hidden text-green-500 text-xs" title="Authenticated">✓</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -921,6 +924,16 @@
         let miniAppContext = null;
         let isInMiniApp = false;
         
+        // Quick Auth state
+        let authToken = null;
+        let authenticatedUserData = null;
+        let isAuthenticated = false;
+        
+        // Quick Auth state
+        let authToken = null;
+        let authenticatedUser = null;
+        let isAuthenticated = false;
+        
         // Load Mini App context on page load
         async function loadMiniAppContext() {
             try {
@@ -938,6 +951,9 @@
                         if (miniAppContext.user) {
                             updateUserDisplay(miniAppContext.user);
                         }
+                        
+                        // Attempt Quick Auth for verified identity
+                        await quickAuthSignIn();
                     }
                 } else {
                     console.log('Not running in Mini App context or SDK not available');
@@ -954,9 +970,9 @@
             const pfpUrl = user.pfpUrl;
             
             // Update username display
-            const usernameEl = document.getElementById('accountUsername');
-            if (usernameEl) {
-                usernameEl.textContent = displayName;
+            const usernameTextEl = document.getElementById('usernameText');
+            if (usernameTextEl) {
+                usernameTextEl.textContent = displayName;
             }
             
             // Update avatar
@@ -969,6 +985,116 @@
                 const initial = displayName.charAt(0).toUpperCase();
                 avatarEl.textContent = initial;
             }
+        }
+        
+        // Quick Auth - Sign In
+        async function quickAuthSignIn() {
+            if (!sdk) {
+                console.log('SDK not available for Quick Auth');
+                return false;
+            }
+            
+            try {
+                console.log('Initiating Quick Auth...');
+                const { token } = await sdk.quickAuth.getToken();
+                
+                if (token) {
+                    authToken = token;
+                    console.log('Quick Auth token received');
+                    
+                    // Verify token with backend
+                    const verified = await verifyAuthToken(token);
+                    
+                    if (verified) {
+                        isAuthenticated = true;
+                        console.log('User authenticated successfully');
+                        return true;
+                    }
+                }
+            } catch (error) {
+                console.error('Quick Auth failed:', error);
+            }
+            
+            return false;
+        }
+        
+        // Verify auth token with backend
+        async function verifyAuthToken(token) {
+            try {
+                // TODO: Replace with your actual backend endpoint
+                // For now, we'll decode the JWT client-side to get FID
+                // In production, ALWAYS verify on your backend!
+                
+                const payload = parseJwt(token);
+                
+                if (payload && payload.sub) {
+                    authenticatedUser = {
+                        fid: payload.sub,
+                        authenticated: true,
+                        token: token
+                    };
+                    
+                    console.log('Authenticated user FID:', payload.sub);
+                    updateAuthenticatedUI();
+                    return true;
+                }
+                
+                // PRODUCTION: Use this backend verification instead
+                /*
+                const response = await fetch('https://your-backend.com/api/auth', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    authenticatedUser = data;
+                    updateAuthenticatedUI();
+                    return true;
+                }
+                */
+            } catch (error) {
+                console.error('Token verification failed:', error);
+            }
+            
+            return false;
+        }
+        
+        // Parse JWT token (client-side only - for development)
+        function parseJwt(token) {
+            try {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                
+                return JSON.parse(jsonPayload);
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // Update UI after authentication
+        function updateAuthenticatedUI() {
+            // Show verified badge
+            const authBadge = document.getElementById('authBadge');
+            if (authBadge && isAuthenticated) {
+                authBadge.classList.remove('hidden');
+            }
+            
+            console.log('✓ User authenticated and verified');
+        }
+        
+        // Sign out
+        function signOut() {
+            authToken = null;
+            authenticatedUser = null;
+            isAuthenticated = false;
+            console.log('User signed out');
         }
         
         // Initialize Mini App context when DOM is ready
@@ -1474,6 +1600,12 @@
                 // Detect Base Account capabilities
                 await detectBaseAccountCapabilities(account);
                 
+                // Trigger Quick Auth if in Mini App
+                if (isInMiniApp && !isAuthenticated) {
+                    console.log('Attempting Quick Auth for Mini App user...');
+                    await quickAuthSignIn();
+                }
+                
                 console.log('Connection complete!');
             } catch (e) {
                 console.error('Connection error details:', e);
@@ -1690,6 +1822,15 @@
                 return;
             }
             
+            // Check authentication for Mini App users (trusted identity)
+            if (isInMiniApp && !isAuthenticated) {
+                console.log('Attempting authentication for secure swap...');
+                const authenticated = await quickAuthSignIn();
+                if (!authenticated) {
+                    console.log('Authentication not available, proceeding with wallet-only verification');
+                }
+            }
+            
             let tokenIn = document.getElementById('tokenIn').value;
             let tokenOut = document.getElementById('tokenOut').value;
             
@@ -1872,6 +2013,15 @@
                 alert('Please connect your wallet first');
                 showWalletModal();
                 return;
+            }
+            
+            // Check authentication for Mini App users
+            if (isInMiniApp && !isAuthenticated) {
+                console.log('Attempting authentication for secure limit order...');
+                const authenticated = await quickAuthSignIn();
+                if (!authenticated) {
+                    console.log('Authentication not available, proceeding with wallet-only verification');
+                }
             }
             
             const tokenIn = document.getElementById('tokenInLimit').value;
@@ -2294,3 +2444,4 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+

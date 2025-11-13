@@ -962,11 +962,13 @@
 
     <script>
         const CONTRACT_ADDRESS = '0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16'; // MangoSwap V4 - NEW CONTRACT
-        const BASE_CHAIN_ID = '0x2105';
-        
-        // PAYMASTER CONFIGURATION - Update this with your paymaster service URL
-        const PAYMASTER_URL = 'https://api.developer.coinbase.com/rpc/v1/base/0XFTXVSOwf0H30PN84h07BmJgiJhNtRw';
-        
+const BASE_CHAIN_ID = '0x2105';
+
+// ✅ FIX #1: Gas buffer constant - reserves 0.001 ETH for gas estimation
+const GAS_BUFFER_ETH = 0.001;
+
+// PAYMASTER CONFIGURATION - Update this with your paymaster service URL
+const PAYMASTER_URL = 'https://api.developer.coinbase.com/rpc/v1/base/0XFTXVSOwf0H30PN84h07BmJgiJhNtRw';
         // Farcaster Mini App SDK - with safe initialization
         let sdk = null;
         let miniAppContext = null;
@@ -1511,13 +1513,25 @@
         document.getElementById('tokenOut').addEventListener('change', getQuote);
         
         document.getElementById('maxBtn').addEventListener('click', () => {
-            if (!isConnected) {
-                alert('Please connect your wallet first');
-                return;
-            }
-            document.getElementById('amountIn').value = userBalanceFrom;
-            getQuote();
-        });
+    if (!isConnected) {
+        alert('Please connect your wallet first');
+        return;
+    }
+    
+    // ✅ FIX #2: For native ETH, leave a buffer for gas
+    const tokenIn = document.getElementById('tokenIn').value;
+    const isNativeToken = tokenIn === '0x0000000000000000000000000000000000000000';
+    const gasBuffer = isNativeToken ? GAS_BUFFER_ETH : 0;
+    const maxAmount = Math.max(0, userBalanceFrom - gasBuffer);
+    
+    if (maxAmount <= 0 && isNativeToken) {
+        alert(`Please leave ${GAS_BUFFER_ETH} ETH for gas fees.\n\nYour balance: ${userBalanceFrom.toFixed(4)} ETH\nGas buffer needed: ${GAS_BUFFER_ETH} ETH`);
+        return;
+    }
+    
+    document.getElementById('amountIn').value = maxAmount.toFixed(6);
+    getQuote();
+});
         
         document.getElementById('swapArrow').addEventListener('click', function() {
             const tokenInSelect = document.getElementById('tokenIn');
@@ -2010,10 +2024,26 @@
                 const minOutWei = ethers.utils.parseEther(minOut);
                 
                 if (isInstant) {
-                    console.log('Executing instant swap...');
-                    
-                    document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Swapping...';
-                    document.getElementById('scheduleSwapBtn').disabled = true;
+    console.log('Executing instant swap...');
+    
+    // ✅ FIX #3: Check if user has enough balance including buffer for gas
+    const isNativeToken = tokenIn === '0x0000000000000000000000000000000000000000';
+    if (isNativeToken) {
+        const amountFloat = parseFloat(amount);
+        if (amountFloat > (userBalanceFrom - GAS_BUFFER_ETH)) {
+            const available = Math.max(0, userBalanceFrom - GAS_BUFFER_ETH);
+            alert(`❌ Insufficient Balance\n\n` +
+                  `Your balance: ${userBalanceFrom.toFixed(4)} ETH\n` +
+                  `Trying to swap: ${amountFloat.toFixed(4)} ETH\n` +
+                  `Gas buffer needed: ${GAS_BUFFER_ETH} ETH\n\n` +
+                  `💡 Maximum you can swap: ${available.toFixed(4)} ETH\n\n` +
+                  `Tip: Click the MAX button to fill in the correct amount!`);
+            return;
+        }
+    }
+    
+    document.getElementById('btnText').innerHTML = '<span class="spinner"></span> Swapping...';
+    document.getElementById('scheduleSwapBtn').disabled = true;
                     
                     // Try batched swap first (GAS FREE with paymaster)
                     const batchedResult = await executeBatchedSwap(tokenIn, tokenOut, amountWei, minOutWei);
@@ -2584,3 +2614,4 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+

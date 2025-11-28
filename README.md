@@ -12,6 +12,13 @@ A next-generation decentralized exchange built on Base, offering seamless token 
 
 ---
 
+<div align="center">
+  <img src="docs/images/onboarding-hero.jpg" alt="MangoSwap - Sweet Swaps on Base" width="70%">
+  <p><em>Trade tokens on Base in seconds with our intuitive interface</em></p>
+</div>
+
+---
+
 ## ✨ Features
 
 ### 🚀 Instant Swaps
@@ -34,9 +41,9 @@ Built with EIP-5792 support for efficient batch transactions and improved UX.
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="docs/images/swap-interface.png" alt="Swap Interface" width="30%">
-  <img src="docs/images/limit-orders.png" alt="Limit Orders" width="30%">
-  <img src="docs/images/scheduled-trades.png" alt="Scheduled Trades" width="30%">
+  <img src="docs/images/swap-interface.jpg" alt="Swap Interface" width="30%">
+  <img src="docs/images/limit-orders.jpg" alt="Limit Orders" width="30%">
+  <img src="docs/images/scheduled-trades.jpg" alt="Scheduled Trades" width="30%">
 </div>
 
 *Clean, intuitive interface for seamless trading on Base*

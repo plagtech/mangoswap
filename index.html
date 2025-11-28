@@ -2587,6 +2587,189 @@ const PAYMASTER_URL = 'https://api.developer.coinbase.com/rpc/v1/base/0XFTXVSOwf
         // Initialize
         updateTargetPriceLabels();
     </script>
+    <!-- 
+=====================================================================
+CUSTOM TOKEN METADATA FETCHING
+Add this script tag RIGHT BEFORE the closing </body> tag
+=====================================================================
+-->
+<script>
+// ERC20 ABI for fetching token metadata
+const TOKEN_METADATA_ABI = [
+    "function name() view returns (string)",
+    "function symbol() view returns (string)",
+    "function decimals() view returns (uint8)"
+];
+
+// Function to validate and fetch token metadata
+async function fetchTokenMetadata(address) {
+    try {
+        // Validate address format
+        if (!address || !address.match(/^0x[a-fA-F0-9]{40}$/)) {
+            return { valid: false, error: 'Invalid address format' };
+        }
+
+        // Create provider (using ethers.js which is already loaded)
+        const provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+        
+        // Create contract instance
+        const tokenContract = new ethers.Contract(address, TOKEN_METADATA_ABI, provider);
+        
+        // Fetch name, symbol, and decimals in parallel
+        const [name, symbol, decimals] = await Promise.all([
+            tokenContract.name(),
+            tokenContract.symbol(),
+            tokenContract.decimals()
+        ]);
+        
+        return {
+            valid: true,
+            address: address,
+            name: name,
+            symbol: symbol,
+            decimals: decimals
+        };
+    } catch (error) {
+        console.error('Token metadata fetch error:', error);
+        return { 
+            valid: false, 
+            error: 'Unable to read token contract. Make sure this is a valid ERC20 token on Base.' 
+        };
+    }
+}
+
+// Function to display token info below the input
+function displayTokenInfo(inputElement, metadata) {
+    // Remove existing info display if any
+    const existingInfo = inputElement.parentElement.querySelector('.token-info-display');
+    if (existingInfo) {
+        existingInfo.remove();
+    }
+    
+    if (metadata.valid) {
+        // Create success message with token info
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'token-info-display mt-2 p-2 bg-green-50 border border-green-300 rounded-lg text-xs animate-fadeIn';
+        infoDiv.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span class="text-green-600 font-bold">✓ Token Recognized:</span>
+                <span class="font-bold text-gray-800">${metadata.symbol}</span>
+            </div>
+            <div class="text-gray-600 mt-1">${metadata.name}</div>
+        `;
+        inputElement.parentElement.appendChild(infoDiv);
+        
+        // Store metadata for later use
+        inputElement.dataset.symbol = metadata.symbol;
+        inputElement.dataset.name = metadata.name;
+        inputElement.dataset.decimals = metadata.decimals;
+        inputElement.dataset.valid = 'true';
+        
+    } else {
+        // Create error message
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'token-info-display mt-2 p-2 bg-red-50 border border-red-300 rounded-lg text-xs animate-fadeIn';
+        infoDiv.innerHTML = `
+            <div class="flex items-center gap-2">
+                <span class="text-red-600 font-bold">✗ Error:</span>
+            </div>
+            <div class="text-red-700 mt-1">${metadata.error}</div>
+        `;
+        inputElement.parentElement.appendChild(infoDiv);
+        
+        // Mark as invalid
+        inputElement.dataset.valid = 'false';
+    }
+}
+
+// Add debounce helper to avoid too many API calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Enhanced event listener for customTokenIn
+const validateTokenIn = debounce(async function() {
+    const address = this.value.trim();
+    if (address && address.length === 42) { // Valid address length
+        // Show loading state
+        this.style.borderColor = '#fdba74'; // orange
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'token-info-display mt-2 text-xs text-orange-600 flex items-center gap-2';
+        loadingDiv.innerHTML = '<span class="spinner"></span> Fetching token info...';
+        this.parentElement.appendChild(loadingDiv);
+        
+        const metadata = await fetchTokenMetadata(address);
+        
+        // Remove loading message
+        const loadingElement = this.parentElement.querySelector('.token-info-display');
+        if (loadingElement) loadingElement.remove();
+        
+        // Display results
+        displayTokenInfo(this, metadata);
+        
+        // Update border color based on validity
+        if (metadata.valid) {
+            this.style.borderColor = '#86efac'; // green
+        } else {
+            this.style.borderColor = '#fca5a5'; // red
+        }
+    }
+}, 800); // Wait 800ms after user stops typing
+
+document.getElementById('customTokenIn').addEventListener('input', validateTokenIn);
+
+// Enhanced event listener for customTokenOut  
+const validateTokenOut = debounce(async function() {
+    const address = this.value.trim();
+    if (address && address.length === 42) { // Valid address length
+        // Show loading state
+        this.style.borderColor = '#86efac'; // green tint while loading
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'token-info-display mt-2 text-xs text-green-600 flex items-center gap-2';
+        loadingDiv.innerHTML = '<span class="spinner"></span> Fetching token info...';
+        this.parentElement.appendChild(loadingDiv);
+        
+        const metadata = await fetchTokenMetadata(address);
+        
+        // Remove loading message
+        const loadingElement = this.parentElement.querySelector('.token-info-display');
+        if (loadingElement) loadingElement.remove();
+        
+        // Display results
+        displayTokenInfo(this, metadata);
+        
+        // Update border color based on validity
+        if (metadata.valid) {
+            this.style.borderColor = '#86efac'; // green
+        } else {
+            this.style.borderColor = '#fca5a5'; // red
+        }
+    }
+}, 800); // Wait 800ms after user stops typing
+
+document.getElementById('customTokenOut').addEventListener('input', validateTokenOut);
+
+console.log('✅ Custom token metadata validation loaded');
+</script>
+
+<!-- Add fade-in animation for smooth appearance -->
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-in;
+}
+</style>
 </body>
 </html>
 

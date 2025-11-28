@@ -1,75 +1,139 @@
-# 👋 Hey, I'm Plag
+# 🥭 MangoSwap
 
-**DeFi Builder | Crypto Author | Base Ecosystem**
+**Sweet Swaps on Base** 🔵
 
-Building the future of decentralized finance on [Base](https://base.org) 🔵
+[![Built on Base](https://img.shields.io/badge/Built%20on-Base-0052FF?style=flat&logo=ethereum&logoColor=white)](https://base.org)
+[![Live](https://img.shields.io/badge/Status-Live-success)](https://mangoswap.xyz)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
+A next-generation decentralized exchange built on Base, offering seamless token swaps with advanced trading features and a beautiful user experience.
 
-## 🚀 What I'm Building
-
-### 🥭 [MangoSwap](https://mangoswap.xyz)
-A next-gen DEX on Base featuring instant swaps, limit orders, and scheduled trading with gas-free transactions.
-
-- ⚡ Instant token swaps with best price execution
-- 🎯 Automated limit orders
-- ⏰ Recurring scheduled swaps (DCA made easy)
-- ⛽ Gas-free trading via Coinbase Paymaster
-- 📦 EIP-5792 transaction batching
-
-🔗 [Try it now →](https://mangoswap.xyz) | [GitHub →](https://github.com/plagtech/mangoswap)
+🌐 **[Try MangoSwap →](https://mangoswap.xyz)**
 
 ---
 
-## 📚 Author
+## ✨ Features
 
-**"28 Tips for Creating Wealth in Crypto"**
+### 🚀 Instant Swaps
+Trade any token on Base in seconds with minimal slippage and best price execution.
 
-Sharing insights and strategies from years of experience navigating the crypto markets since 2021.
+### 🎯 Limit Orders
+Set your target price and let orders execute automatically when the market hits your price—no need to watch charts all day.
+
+### ⏰ Scheduled Swaps
+Automate recurring trades on a daily, weekly, or monthly schedule. Perfect for DCA strategies.
+
+### ⛽ Gas-Free Transactions
+Powered by Coinbase Paymaster—trade without worrying about gas fees.
+
+### 📦 Transaction Batching
+Built with EIP-5792 support for efficient batch transactions and improved UX.
 
 ---
 
-## 🛠️ Tech Stack
+## 📸 Screenshots
 
+<div align="center">
+  <img src="docs/images/swap-interface.png" alt="Swap Interface" width="30%">
+  <img src="docs/images/limit-orders.png" alt="Limit Orders" width="30%">
+  <img src="docs/images/scheduled-trades.png" alt="Scheduled Trades" width="30%">
+</div>
+
+*Clean, intuitive interface for seamless trading on Base*
+
+---
+
+## 🏗️ Built With
+
+- **Frontend**: React, TypeScript, TailwindCSS
+- **Blockchain**: Solidity, Base (Ethereum L2)
+- **Web3**: Wagmi, Viem, RainbowKit
+- **Smart Contracts**: EIP-5792 (Batch Transactions)
+- **Sponsorship**: Coinbase Paymaster for gas-free txs
+
+---
+
+## 📝 Smart Contracts
+
+**Base Mainnet:**
+- Router Contract: [`0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16`](https://basescan.org/address/0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16)
+
+All contracts are verified on Basescan.
+
+---
+
+## 🎯 Base Build Program
+
+MangoSwap is part of the **Base Build** cohort, building the future of DeFi on Base alongside other innovative projects.
+
+---
+
+## 🚦 Getting Started
+
+### Prerequisites
+```bash
+node >= 18.0.0
+npm or yarn
 ```
-Blockchain:    Solidity, Base, Ethereum
-Frontend:      React, TypeScript, TailwindCSS
-Web3:          Wagmi, Viem, RainbowKit
-Tools:         EIP-5792, Coinbase Paymaster
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/plagtech/mangoswap.git
+
+# Navigate to project directory
+cd mangoswap
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Environment Variables
+Create a `.env.local` file:
+```env
+NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
+NEXT_PUBLIC_BASE_RPC_URL=https://mainnet.base.org
 ```
 
 ---
 
-## 🎯 Current Focus
+## 🤝 Contributing
 
-- 🔨 Expanding MangoSwap features and liquidity
-- 📈 Growing Base ecosystem presence
-- 🤝 Building in the Base Build cohort
-- 📝 Creating educational DeFi content
+Contributions are welcome! Feel free to open issues or submit pull requests.
 
----
-
-## 📊 GitHub Stats
-
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=plagtech&show_icons=true&theme=dark&hide_border=true&bg_color=0D1117)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-## 🔗 Connect
+## 📄 License
 
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/lostpoet)
-[![Twitter](https://img.shields.io/badge/MangoSwap-FF6B00?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/mngoswp)
-[![Farcaster](https://img.shields.io/badge/Farcaster-855DCD?style=for-the-badge&logo=ethereum&logoColor=white)](https://farcaster.xyz/plag)
-[![Website](https://img.shields.io/badge/MangoSwap-0052FF?style=for-the-badge&logo=ethereum&logoColor=white)](https://mangoswap.xyz)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🔗 Links
+
+- **Website**: [mangoswap.xyz](https://mangoswap.xyz)
+- **Twitter**: [@mngoswp](https://twitter.com/mngoswp)
+- **Farcaster**: [@plag](https://farcaster.xyz/plag)
+- **Base App**: plag.farcaster.eth
+- **Base**: [base.org](https://base.org)
+
+---
+
+## 📬 Contact
+
+Questions or feedback? Reach out on [Twitter](https://twitter.com/mngoswp) or [Farcaster](https://farcaster.xyz/plag).
 
 ---
 
 <div align="center">
-  <sub>Building on Base since 2024 🔵</sub>
+  <sub>Built with ❤️ on Base</sub>
 </div>
-- Website: https://mangoswap.xyz
-- Twitter: [@lostpoet](https://twitter.com/lostpoet)
-
----
-
-Built with ❤️ on Base

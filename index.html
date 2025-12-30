@@ -1368,7 +1368,9 @@
             input.addEventListener('input', validateInput);
             input.addEventListener('paste', () => setTimeout(validateInput, 100));
         }
- miniAppContext.user) {
+
+        function updateUsernameDisplay(address) {
+            if (miniAppContext && miniAppContext.user) {
                 const user = miniAppContext.user;
                 const displayName = user.displayName || user.username || 'User';
                 const pfpUrl = user.pfpUrl;
@@ -1387,6 +1389,7 @@
                 document.getElementById('accountUsername').textContent = username;
             }
         }
+
 
         async function detectBaseAccountCapabilities(address) {
             try {
@@ -1460,6 +1463,19 @@
         document.getElementById('closeSettings').addEventListener('click', () => {
             document.getElementById('settingsModal').classList.add('hidden');
         });
+
+        function updateSlippageUI() {
+            document.getElementById('slippageDisplay').textContent = slippageTolerance;
+            document.querySelectorAll('.slippage-btn').forEach(btn => {
+                if (parseFloat(btn.dataset.value) === slippageTolerance) {
+                    btn.classList.add('bg-orange-500', 'text-white', 'border-orange-500');
+                    btn.classList.remove('border-custom');
+                } else {
+                    btn.classList.remove('bg-orange-500', 'text-white', 'border-orange-500');
+                    btn.classList.add('border-custom');
+                }
+            });
+        }
 
         document.querySelectorAll('.slippage-btn').forEach(btn => {
             btn.addEventListener('click', () => {

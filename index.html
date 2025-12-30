@@ -38,7 +38,7 @@
   <meta name="twitter:title" content="MangoSwap" />
   <meta name="twitter:description" content="Automated trading on Base with limit orders and scheduled swaps" />
   <meta name="twitter:image" content="https://mangoswap.xyz/og-image.png" />
-  <meta name="twitter:site" content="@YourTwitterHandle" />
+  <meta name="twitter:site" content="@Mangoswap_xyz" />
   
   <!-- Farcaster Mini App Embed Metadata -->
   <meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://mangoswap.xyz/preview.png","button":{"title":"Launch MangoSwap","action":{"type":"launch_frame","name":"MangoSwap","url":"https://mangoswap.xyz","splashImageUrl":"https://mangoswap.xyz/splash.png","splashBackgroundColor":"#f18435"}}}' />
@@ -1637,6 +1637,25 @@
         }
         
         document.getElementById('closeSuccessModal').addEventListener('click', hideSuccessModal);
+
+        // Dark Mode Toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = document.getElementById('themeIcon');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.textContent = '☀️';
+                localStorage.setItem('mangoswapTheme', 'dark');
+            } else {
+                icon.textContent = '🌙';
+                localStorage.setItem('mangoswapTheme', 'light');
+            }
+        });
+
+        // Load saved theme preference
+        if (localStorage.getItem('mangoswapTheme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeIcon').textContent = '☀️';
+        }
 
         async function connectWallet(walletType) {
             console.log('Attempting to connect:', walletType);

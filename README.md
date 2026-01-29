@@ -6,45 +6,42 @@
 [![Live](https://img.shields.io/badge/Status-Live-success)](https://mangoswap.xyz)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A next-generation decentralized exchange built on Base, offering seamless token swaps with advanced trading features and a beautiful user experience.
+A next-generation decentralized exchange built on Base, offering seamless token swaps with scheduled trading and gas-free transactions.
 
 🌐 **[Try MangoSwap →](https://mangoswap.xyz)**
 
 ---
 
-<div align="center">
-  <img src="docs/images/onboarding-hero.jpg" alt="MangoSwap - Sweet Swaps on Base" width="70%">
-  <p><em>Trade tokens on Base in seconds with our intuitive interface</em></p>
-</div>
+[![MangoSwap - Sweet Swaps on Base](docs/images/onboarding-hero.jpg)](docs/images/onboarding-hero.jpg)
+
+*Trade tokens on Base in seconds with our intuitive interface*
 
 ---
 
 ## ✨ Features
 
 ### 🚀 Instant Swaps
+
 Trade any token on Base in seconds with minimal slippage and best price execution.
 
-### 🎯 Limit Orders
-Set your target price and let orders execute automatically when the market hits your price—no need to watch charts all day.
-
 ### ⏰ Scheduled Swaps
+
 Automate recurring trades on a daily, weekly, or monthly schedule. Perfect for DCA strategies.
 
 ### ⛽ Gas-Free Transactions
+
 Powered by Coinbase Paymaster—trade without worrying about gas fees.
 
 ### 📦 Transaction Batching
+
 Built with EIP-5792 support for efficient batch transactions and improved UX.
 
 ---
 
 ## 📸 Screenshots
 
-<div align="center">
-  <img src="docs/images/swap-interface.jpg" alt="Swap Interface" width="30%">
-  <img src="docs/images/limit-orders.jpg" alt="Limit Orders" width="30%">
-  <img src="docs/images/scheduled-trades.jpg" alt="Scheduled Trades" width="30%">
-</div>
+[![Swap Interface](docs/images/swap-interface.jpg)](docs/images/swap-interface.jpg)
+[![Scheduled Trades](docs/images/scheduled-trades.jpg)](docs/images/scheduled-trades.jpg)
 
 *Clean, intuitive interface for seamless trading on Base*
 
@@ -52,18 +49,19 @@ Built with EIP-5792 support for efficient batch transactions and improved UX.
 
 ## 🏗️ Built With
 
-- **Frontend**: React, TypeScript, TailwindCSS
-- **Blockchain**: Solidity, Base (Ethereum L2)
-- **Web3**: Wagmi, Viem, RainbowKit
-- **Smart Contracts**: EIP-5792 (Batch Transactions)
-- **Sponsorship**: Coinbase Paymaster for gas-free txs
+* **Frontend**: React, TypeScript, TailwindCSS
+* **Blockchain**: Solidity, Base (Ethereum L2)
+* **Web3**: Wagmi, Viem, RainbowKit
+* **Smart Contracts**: EIP-5792 (Batch Transactions)
+* **Sponsorship**: Coinbase Paymaster for gas-free txs
 
 ---
 
 ## 📝 Smart Contracts
 
 **Base Mainnet:**
-- Router Contract: [`0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16`](https://basescan.org/address/0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16)
+
+* Router Contract: [`0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16`](https://basescan.org/address/0xb81fea65B45D743AB62a1A2B351f4f92fb1d4D16)
 
 All contracts are verified on Basescan.
 
@@ -78,12 +76,14 @@ MangoSwap is part of the **Base Build** cohort, building the future of DeFi on B
 ## 🚦 Getting Started
 
 ### Prerequisites
-```bash
+
+```
 node >= 18.0.0
 npm or yarn
 ```
 
 ### Installation
+
 ```bash
 # Clone the repository
 git clone https://github.com/plagtech/mangoswap.git
@@ -99,8 +99,10 @@ npm run dev
 ```
 
 ### Environment Variables
+
 Create a `.env.local` file:
-```env
+
+```
 NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=your_project_id
 NEXT_PUBLIC_BASE_RPC_URL=https://mainnet.base.org
 ```
@@ -127,11 +129,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Website**: [mangoswap.xyz](https://mangoswap.xyz)
-- **Twitter**: [@mngoswp](https://twitter.com/mngoswp)
-- **Farcaster**: [@plag](https://farcaster.xyz/plag)
-- **Base App**: plag.farcaster.eth
-- **Base**: [base.org](https://base.org)
+* **Website**: [mangoswap.xyz](https://mangoswap.xyz)
+* **Twitter**: [@mngoswp](https://twitter.com/mngoswp)
+* **Farcaster**: [@plag](https://farcaster.xyz/plag)
+* **Base App**: plag.farcaster.eth
+* **Base**: [base.org](https://base.org)
 
 ---
 
@@ -141,6 +143,4 @@ Questions or feedback? Reach out on [Twitter](https://twitter.com/mngoswp) or [F
 
 ---
 
-<div align="center">
-  <sub>Built with ❤️ on Base</sub>
-</div>
+Built with ❤️ on Base
